@@ -905,6 +905,7 @@
         "Shiny": "✨",
         "Alolan": "Alola-Form",
         "Galarian": "Galar-Form",
+        "Hisuian": "Hisui-Form",
         "Armored": "Armored",
         "A": "A",
         "B": "B",
@@ -994,10 +995,10 @@
         "Burn": "Flammenmodul",
         "Chill": "Gefriermodul",
         "Douse": "Aquamodul",
-        "Small Size": "Small Size",
-        "Average Size": "Average Size",
-        "Large Size": "Large Size",
-        "Super Size": "Super Size"
+        "Small Size": "Größe S",
+        "Average Size": "Größe M",
+        "Large Size": "Größe L",
+        "Super Size": "Größe XL"
     },
     "Filters": {
         "Normal": "Normal",
@@ -1026,6 +1027,7 @@
         "Kalos": "Kalos",
         "Alola": "Alola",
         "Galar": "Galar",
+        "Hisui": "Hisui",
         "Age": "Alter",
         "Buddy": "Kumpel",
         "CandyXL": "bonbonxl",
