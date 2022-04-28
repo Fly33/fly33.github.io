@@ -190,20 +190,6 @@ function load_list() {
     onfilter();
 }
 
-function load_all() {
-    storage = JSON.parse(localStorage.getItem(location.pathname) || "{}");
-    if (!storage.lists)
-        storage.lists = {};
-    if (!storage.language)
-        storage.language = l10n[0].id;
-    for (let name in storage.lists) {
-        $('#list select').append($('<option></option>').prop('value', name).text(name));
-    }
-    $('#list select option:first-child').prop('selected', true);
-    $(`#language option[value=${$.escapeSelector(storage.language)}]`).prop('selected', true);
-    on_list_change();
-}
-
 function generate_filter(pokemon) {
     function gen_term(key, keys) {
         if (key !== "")
@@ -859,6 +845,37 @@ function on_language_change() {
     save_all();
 }
 
+function load_all() {
+    storage = JSON.parse(localStorage.getItem(location.pathname) || "{}");
+    if (!storage.lists)
+        storage.lists = {};
+    if (!storage.language)
+        storage.language = l10n[0].id;
+    for (let name in storage.lists) {
+        $('#list select').append($('<option></option>').prop('value', name).text(name));
+    }
+    $('#list select option:first-child').prop('selected', true);
+    $(`#language option[value=${$.escapeSelector(storage.language)}]`).prop('selected', true);
+
+    $('#special').bind('change', on_special_change);
+    $('#compact').bind('change', on_compact_change);
+    $('#filter').bind('input', onfilter);
+    $('#list select').bind('change', on_list_change);
+    $('#list input[type=text]').bind('input', on_list_input);
+    $('#list input[type=button]:first-child').bind('click', on_list_new);
+    $('#list input[type=button]:last-child').bind('click', on_list_delete);
+    $('textarea').bind('focus', on_textarea_focus);
+    $('textarea').bind('paste', parse);
+    $('textarea').bind('input', generate);
+    $('#language').bind('change', on_language_change);
+    $('#section select').bind('change', on_section_change);
+    $('#section input[type=text]').bind('input', on_section_input);
+    $('.toolbox').bind('click', on_toolbox_close);
+    $('.toolbox div div').bind('click', e => e.stopPropagation());
+
+    on_list_change();
+}
+
 $(document).ready(function() {
     var r = 0;
     function request_json(filename, callback) {
@@ -901,7 +918,7 @@ $(document).ready(function() {
         for (let i = 0; i < data.length; ++i) {
             if (i == 0 || data[i].region != data[i-1].region)
                 content.append('<div class="region"><span>' + data[i].region + '</span><hr/></div>');
-            content.append(`<span class="dioecious_container" title="${data[i].dex}. ${data[i].name}${(data[i].origin ? ' (' + data[i].origin + ')' : '')}${(data[i].form ? ' (' + data[i].form + ')' : '')}${(data[i].shiny ? ' ✨' : '')}" id="${data[i].pvpoke_id}"><input type="radio" name="${data[i].pvpoke_id}" value="3"><input type="radio" name="${data[i].pvpoke_id}" value="2"><input type="radio" name="${data[i].pvpoke_id}" value="1"><input type="radio" name="${data[i].pvpoke_id}" value="0" checked><s></s><u></u><img src="${image(i)}"></span>`);
+            content.append(`<span class="dioecious_container" title="${data[i].dex}. ${data[i].name}${(data[i].origin ? ' (' + data[i].origin + ')' : '')}${(data[i].form ? ' (' + data[i].form + ')' : '')}${(data[i].shiny ? ' ✨' : '')}" id="${data[i].pvpoke_id}" style="display: none;"><input type="radio" name="${data[i].pvpoke_id}" value="3"><input type="radio" name="${data[i].pvpoke_id}" value="2"><input type="radio" name="${data[i].pvpoke_id}" value="1"><input type="radio" name="${data[i].pvpoke_id}" value="0" checked><s></s><u></u><img src="${image(i)}"></span>`);
             $(`#${data[i].pvpoke_id} > input`).change(() => onchange(i));
             $(`#${data[i].pvpoke_id}`).bind('contextmenu', e => on_pokemon_context(e, i));
             index_by_name[`${data[i].name}#${data[i].origin}${data[i].form}#${data[i].shiny}`] = i;
@@ -912,20 +929,4 @@ $(document).ready(function() {
         }
         prepare();
     });
-
-    $('#special').bind('change', on_special_change);
-    $('#compact').bind('change', on_compact_change);
-    $('#filter').bind('input', onfilter);
-    $('#list select').bind('change', on_list_change);
-    $('#list input[type=text]').bind('input', on_list_input);
-    $('#list input[type=button]:first-child').bind('click', on_list_new);
-    $('#list input[type=button]:last-child').bind('click', on_list_delete);
-    $('textarea').bind('focus', on_textarea_focus);
-    $('textarea').bind('paste', parse);
-    $('textarea').bind('input', generate);
-    $('#language').bind('change', on_language_change);
-    $('#section select').bind('change', on_section_change);
-    $('#section input[type=text]').bind('input', on_section_input);
-    $('.toolbox').bind('click', on_toolbox_close);
-    $('.toolbox div div').bind('click', e => e.stopPropagation());
 })
