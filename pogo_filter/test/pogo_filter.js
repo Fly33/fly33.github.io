@@ -940,12 +940,12 @@ function on_list_edit() {
     var old_name = $('#list select').val();
     var name = old_name;
     while (true) {
-        name = prompt("Enter new name", name);
+        name = prompt("Enter filter name", name);
         if (!name || name === old_name)
             return;
         if (!(name in storage.lists))
             break;
-        alert(`The "${name}" list already exist`);
+        alert(`The "${name}" filter already exists.`);
     }
     storage.lists[name] = storage.lists[old_name];
     delete storage.lists[old_name];
@@ -957,12 +957,12 @@ function on_list_edit() {
 function on_list_new(name) {
     if (!name) {
         while (true) {
-            name = prompt("Enter list name");
+            name = prompt("Enter filter name");
             if (!name)
                 return;
             if (!(name in storage.lists))
                 break;
-            alert(`The "${name}" list already exist`);
+            alert(`The "${name}" filter already exists.`);
         }
     }
     $('#list select').append($('<option></option>').prop('value', name).text(name));
@@ -978,7 +978,7 @@ function on_list_new(name) {
 }
 
 function on_list_delete() {
-    if (!confirm("Delete the list?"))
+    if (!confirm("Delete the filter?"))
         return;
     var name = $('#list select').val();
     $('#list select option:selected').remove();
