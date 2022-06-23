@@ -57,6 +57,28 @@ function chain(it, fn, ...jobs) {
     return chain(fn(it), ...jobs);
 }
 
+function* object_keys(obj) {
+    for (key in obj)
+        yield key;
+}
+
+function* object_entries(obj) {
+    for (key in obj)
+        yield [key, obj[key]];
+}
+
+function lower_bound(arr, v) {
+    let i = -1, j = arr.length;
+    while(j - i > 1) {
+        let k = (i + j) >> 1;
+        if (v <= arr[k])
+            j = k;
+        else
+            i = k;
+    }
+    return j;
+}
+
 // Set.prototype.toString = function () {
     // var result = '{'
     // for (let [key, value] of this) {
@@ -76,44 +98,41 @@ function chain(it, fn, ...jobs) {
 // }
 
 var data;
-var l10n;
-var l10n_by_id;
-var storage;
-var groups;
-var species;
-var sections;
-var filters;
-var index_by_name;
+var pokemon;
+var l10n, l10n_by_id;
+var storage, list, species;
+var tags;
+var groups, filters, selected, sections;
+var shiny = 0, costume = 0;
 
-function prepare() {
-    groups = new Map();
+function prepare_structures() {
+    groups = {};
+    function add_item(grp, key, ...args) {
+        if (!grp[key])
+            grp[key] = {value: 0};
+        if (args.length === 0)
+            return;
+        if (!grp[key].sub)
+            grp[key].sub = {};
+        add_item(grp[key].sub, ...args);
+    }
     for (let i = 0; i < data.length; ++i) {
-        let grp = groups;
-        if (!grp.has(data[i].name))
-            grp.set(data[i].name, {value: false, sub: new Map()});
-        grp = grp.get(data[i].name).sub;
-        if (!grp.has(data[i].filter1))
-            grp.set(data[i].filter1, {value: false, sub: new Map()});
-        grp = grp.get(data[i].filter1).sub;
-        if (!grp.has(data[i].filter2))
-            grp.set(data[i].filter2, {value: false, sub: new Map()});
-        grp = grp.get(data[i].filter2).sub;
-        let shiny = data[i].shiny ? "shiny" : "";
-        if (!grp.has(shiny))
-            grp.set(shiny, {value: false, sub: new Map()});
-        grp = grp.get(shiny).sub;
-        grp.set("male", {value: 0});
-        grp.set("female", {value: 0});
+        // Имя пока, фильтр 1, фильтр 2, шайни, костюмы, пол
+        for (let j = 0; j < data[i].genus.length; ++j) {
+            add_item(groups, data[i].name, data[i].filter1, data[i].filter2, data[i].genus[j].kind.shiny ? "shiny" : "", data[i].genus[j].kind.costume ? "costume" : "", data[i].genus[j].gender);
+        }
     }
     sections = new Map();
-    filters = new Map();
-    for (let [key, value] of groups) {
-        filters.set(key, generate_filter(key));
+    filters = {};
+    for (let key in groups) {
+        filters[key] = generate_filter(key);
     }
+    selected = {};
 }
 
 function zero_groups(grp) {
-    for (let [key, value] of grp) {
+    for (let key in grp) {
+        let value = grp[key];
         if (value.value && value.sub)
             zero_groups(value.sub);
         value.value = 0;
@@ -125,14 +144,23 @@ function update_node(node, value, ...args) {
         node.value += value;
         return;
     }
-    update_node(node.sub.get(value), ...args);
+    update_node(node.sub[value], ...args);
     node.value = false;
-    for (let [key, value] of node.sub) {
-        if (!value.value)
+    for (let key in node.sub) {
+        if (!node.sub[key].value)
             continue;
         node.value = true;
         break;
     }
+}
+
+function bulbapedia_image(bulbapedia_id, size) {
+    //return `https://archives.bulbagarden.net/media/upload/thumb/${bulbapedia_id[0]}/${bulbapedia_id}.png/${size}px-${bulbapedia_id.slice(3)}.png`;
+    return `https://archives.bulbagarden.net/media/upload/${bulbapedia_id[0]}/${bulbapedia_id}.png`;
+}
+
+function fandom_image(fandom_id, size) {
+    return `https://static.wikia.nocookie.net/pokemongo/images/${fandom_id[0]}/${fandom_id}.png/revision/latest/smart/width/${size}/height/${size}`;
 }
 
 function image(i) {
@@ -142,21 +170,7 @@ function image(i) {
 }
 
 function default_specy() {
-    return {section: '', gender: 0};
-}
-
-function add_to_section(i, section) {
-    if (!sections.has(section))
-        sections.set(section, new Set());
-    sections.get(section).add(i);
-}
-
-function remove_from_section(i, section) {
-    if (!sections.has(section))
-        return;
-    sections.get(section).delete(i);
-    if (sections.get(section).size === 0)
-        sections.delete(section);
+    return {checked: 0, tags: []};
 }
 
 function save_all() {
@@ -164,47 +178,70 @@ function save_all() {
 }
 
 function load_list() {
-    //console.log(`loading ${$('#list select').val()}`);
-    species = storage.lists[$('#list select').val()];
-    
+    console.log(`loading ${$('#list select').val()}`);
+    list = storage.lists[$('#list select').val()];
+    if (!list._version_) { // conversion
+        list = {
+            species: list,
+            _version_: 1,
+            compact: !!list['_compact_'],
+        }
+        delete list.species['_compact_'];
+        storage.lists[$('#list select').val()] = list;
+    }
+    species = list.species;
+
     //console.log(species);
-    
+
     sections.clear();
     zero_groups(groups);
+    selected = {};
+    tags = {};
 
-    let l10n = l10n_by_id[$('#language').val()].data;
+    shiny = 0;
+    costume = 0;
 
-    let special = !!species['_special_'];
-    let compact = !!species['_compact_'];
-    $('#special').prop('checked', special);
-    $('#compact').prop('checked', compact);
+//    let l10n = l10n_by_id[storage.language].data;
+
+    $('#compact').prop('checked', list.compact);
     for (let i = 0; i < data.length; ++i) {
-        let {section, gender} = species[data[i].pvpoke_id] || default_specy();
-        let container = $(`#${data[i].pvpoke_id}`);
-        container.find(`> input[value=${gender}]`).prop('checked', true);
-        container.find(`> u`).text(section);
-        update_gender_selection(i, section, special, 0, gender);
+        data[i].checked = 0;
+        data[i].tags = {}
+        for (let j = 0; j < data[i].genus.length; ++j) {
+            let id = data[i].genus[j].id;
+            $(`#${id}`).removeClass('checked');
+            let pvpoke_id = data[i].pvpoke_id + (data[i].genus[j].kind.shiny ? '_shiny' : '');
+            if (!species[id] && species[pvpoke_id] && (species[pvpoke_id].gender & (data[i].genus[j].male * 2 + data[i].genus[j].female || 3))) {
+                //console.log(species[pvpoke_id]);
+                species[id] = {checked: 1, tags: []};
+                if (species[pvpoke_id].section) {
+                    species[id].tags.push(species[pvpoke_id].section);
+                }
+            }
+            if (!species[id] || !species[id].checked)
+                continue;
+            for (let tag_name of species[id].tags) {
+                if (!(tag_name in tags))
+                    tags[tag_name] = 0;
+                ++tags[tag_name];
+                if (!(tag_name in data[i].tags))
+                    data[i].tags[tag_name] = 0;
+                ++data[i].tags[tag_name];
+            }
+            species[id].checked = false;
+            check_pokemon(pokemon[id]);
+            //console.log(pokemon[id]);
+        }
+        update(data[i]);
+        delete species[data[i].pvpoke_id];
+        delete species[data[i].pvpoke_id + '_shiny'];
     }
-    
+
     generate();
     onfilter();
 }
 
-function load_all() {
-    storage = JSON.parse(localStorage.getItem(location.pathname) || "{}");
-    if (!storage.lists)
-        storage.lists = {};
-    if (!storage.language)
-        storage.language = l10n[0].id;
-    for (let name in storage.lists) {
-        $('#list select').append($('<option></option>').prop('value', name).text(name));
-    }
-    $('#list select option:first-child').prop('selected', true);
-    $(`#language option[value=${$.escapeSelector(storage.language)}]`).prop('selected', true);
-    on_list_change();
-}
-
-function generate_filter(pokemon) {
+function generate_filter(pokemon_name) {
     function gen_term(key, keys) {
         if (key !== "")
             return l10n => ',!' + l10n.filters[key];
@@ -214,24 +251,27 @@ function generate_filter(pokemon) {
     
     function gen(node) {
         if (!node.sub)
-            return function*(l10n, special) {
+            return function*(_l10n) {
                 if (!node.value)
                     yield "";
             };
-        let items = Array.from(chain(node.sub.entries(), map(([key, value]) => [key.toLowerCase(), value]), map(([key, value]) => [key, gen_term(key, node.sub.keys()), gen(value)])));
+        let items = Array.from(chain(object_keys(node.sub), map(key => [key.toLowerCase(), node.sub[key]]), map(([key, value]) => ({key: key, term_gen: gen_term(key, object_keys(node.sub)), sub_gen: gen(value)}))));
         if (items.length === 1)
-            return items[0][2];
-        let shiny = node.sub.has("shiny");
-        let index = items[0][0] === "" ? 0 : 1;
-        return function*(l10n, special) {
+            return items[0].sub_gen;
+        let is_shiny = !!node.sub["shiny"];
+        let is_costume = !!node.sub["costume"];
+        let index = items[0].key === "" ? 0 : 1;
+        return function*(l10n) {
             if (!node.value)
                 yield "";
-            else if (shiny && !special)
-                yield* items[index][2](l10n, special);
+            else if (!shiny && is_shiny)
+                yield* items[index].sub_gen(l10n);
+            else if (!costume && is_costume)
+                yield* items[index].sub_gen(l10n);
             else {
-                for (let [key, term_gen, sub_gen] of items) {
+                for (let {_key, term_gen, sub_gen} of items) {
                     let term = term_gen(l10n);
-                    for (let tail of sub_gen(l10n, special)) {
+                    for (let tail of sub_gen(l10n)) {
                         yield term + tail;
                     }
                 }
@@ -239,127 +279,183 @@ function generate_filter(pokemon) {
         };
     }
     
-    let node = groups.get(pokemon);
+    let node = groups[pokemon_name];
     let filter_gen = gen(node);
-    return (l10n, special) => chain(filter_gen(l10n, special), filter(x => x), map(filter => '&!' + l10n.names[pokemon.toLowerCase()] + filter));
+    return (l10n) => chain(filter_gen(l10n), filter(x => x), map(filter => '&!' + l10n.names[pokemon_name.toLowerCase()] + filter));
 }
 
-// function update_filter(pokemon, special, l10n) {
-    // function uf(group) {
-        // if (group === 0)
-            // return [''];
-        // if (group > 0)
-            // return [];
-        // let group_it = group.entries();
-        // if (!special)
-            // group_it = filter(([key, value]) => key != "shiny")(group_it);
-        // let items = Array.from(group_it, ([key, value]) => [key, uf(value)]);
-        // if (items.length === 1)
-            // return items[0][1];
-        // if (items.map(([key, value]) => value.length === 1 && value[0] === '').reduce((x, y) => x && y))
-            // return ['']
-        // let result = []
-        // for (let [key, value] of items) {
-            // let filter
-            // if (key === '')
-                // filter = ',' + Array.from(group.keys()).filter(x => x).map(x => l10n.filters[x.toLowerCase()]).join(',');
-            // else
-                // filter = ',!' + l10n.filters[key.toLowerCase()];
-            // for (let item of value)
-                // result.push(filter + item);
-        // }
-        // return result;
-    // }
-    // let filters = uf(groups.get(pokemon));
-    // if (filters.length === 1 && filters[0] === '')
-        // return ''
-    // return filters.map(filter => '&!' + l10n.names[pokemon.toLowerCase()] + filter).join('')
-// }
-
-function update_gender_selection(i, section, special, old_gender, new_gender) {
-    let male = (new_gender >> 1 & 1) - (old_gender >> 1 & 1);
-    let female = (new_gender & 1) - (old_gender & 1);
-    if (male !== 0)
-        update_node(groups.get(data[i].name), data[i].filter1, data[i].filter2, data[i].shiny ? "shiny" : "", "male", male);
-    if (female !== 0)
-        update_node(groups.get(data[i].name), data[i].filter1, data[i].filter2, data[i].shiny ? "shiny" : "", "female", female);
-    if (new_gender !== 0 && (special || !data[i].special))
-        add_to_section(i, section)
-    else
-        remove_from_section(i, section);
+function add_to_section(poke, section) {
+    if (!sections.has(section))
+        sections.set(section, new Set());
+    sections.get(section).add(poke.id);
 }
 
-function update(i) {
-    let special = $('#special').prop('checked');
-    let {section, gender: old_gender} = species[data[i].pvpoke_id] || default_specy();
-    let new_gender = +$(`#${data[i].pvpoke_id} > input:checked`).val();
-    update_gender_selection(i, section, special, old_gender, new_gender);
-    if (old_gender !== new_gender) {
-        if (!species[data[i].pvpoke_id])
-            species[data[i].pvpoke_id] = default_specy();
-        species[data[i].pvpoke_id].gender = new_gender;
+function remove_from_section(poke, section) {
+    if (!sections.has(section))
+        return;
+    sections.get(section).delete(poke.id);
+    if (sections.get(section).size === 0)
+        sections.delete(section);
+} 
+
+function check_pokemon(poke) {
+    if (!species[poke.id])
+        species[poke.id] = default_specy();
+    if (species[poke.id].checked)
+        return;
+    ++poke.data.checked;
+    if (poke.kind.shiny)
+        ++shiny;
+    if (poke.kind.costume)
+        ++costume;
+    species[poke.id].checked = true;
+    $(`#${poke.id}`).addClass('checked');
+    update_node(groups[poke.data.name], poke.data.filter1, poke.data.filter2, poke.kind.shiny ? "shiny" : "", poke.kind.costume ? "costume" : "", poke.gender, 1);
+    if (species[poke.id].tags.length) {
+        for (let tag of species[poke.id].tags) {
+            add_to_section(poke, tag);
+        }
+    } else {
+        add_to_section(poke, "");
     }
+    update(poke.data);
+}
+
+function uncheck_pokemon(poke) {
+    if (!species[poke.id])
+        return;
+    if (!species[poke.id].checked)
+        return;
+    --poke.data.checked;
+    if (poke.kind.shiny)
+        --shiny;
+    if (poke.kind.costume)
+        --costume;
+    species[poke.id].checked = false;
+    $(`#${poke.id}`).removeClass('checked');
+    update_node(groups[poke.data.name], poke.data.filter1, poke.data.filter2, poke.kind.shiny ? "shiny" : "", poke.kind.costume ? "costume" : "", poke.gender, -1);
+    if (species[poke.id].tags.length) {
+        for (let tag of species[poke.id].tags) {
+            remove_from_section(poke, tag);
+        }
+    } else {
+        remove_from_section(poke, "");
+    }
+    update(poke.data);
+}
+
+function toggle_pokemon(poke) {
+    let {checked} = species[poke.id] || default_specy();
+    if (checked)
+        uncheck_pokemon(poke);
+    else
+        check_pokemon(poke);
+}
+
+function update(data) {
+    let container = $(`#${data.pvpoke_id}`); 
+    if (data.checked)
+        container.addClass('checked');
+    else
+        container.removeClass('checked');
+    if (selected[data.pvpoke_id])
+        container.addClass('selected');
+    else
+        container.removeClass('selected');
+    let tag_keys = Object.keys(data.tags);
+    if (tag_keys.length === 0)
+        container.find('> u').text("");
+    else if (tag_keys.length === 1)
+        container.find('> u').text(tag_keys[0]);
+    else
+        container.find('> u').text(`§*${tag_keys.length}`);
 }
 
 function generate() {
-    let compact = $('#compact').prop('checked');
-    let special = $('#special').prop('checked');
-    let l10n = l10n_by_id[$('#language').val()].data;
+    let l10n = l10n_by_id[storage.language].data;
     let result;
-    if (compact)
-        result = generate_compact(l10n, special);
+    if (list.compact)
+        result = generate_compact(l10n);
     else
-        result = generate_full(l10n, special);
+        result = generate_full(l10n);
     $('textarea').val(result);
 }
 
-function generate_full(l10n, special) {
+function binary_search(arr, v) {
+    if (arr.length === 0)
+        return false;
+    let i = 0, j = arr.length;
+    while(j - i > 1) {
+        let k = (i + j) >> 1;
+        if (v < arr[k])
+            j = k;
+        else
+            i = k;
+    }
+    return arr[i] === v;
+}
+
+function generate_full(l10n) {
     let result = chain([...sections.keys()].sort(), map(key => [key, sections.get(key)]), map(function ([key, value]) {
-        return [key, chain(value.values(), map(function(i) {
-            var pokemon_name = l10n.names[data[i].name.toLowerCase()];
-            if (data[i].origin)
-                pokemon_name += ':(' + l10n.forms[data[i].origin.toLowerCase()] + ')';
-            if (data[i].form)
-                pokemon_name += ':(' + l10n.forms[data[i].form.toLowerCase()] + ')';
-            if (data[i].shiny)
+        return [key, chain([...value.values()].sort((id1, id2) => pokemon[id1].data.dex - pokemon[id2].data.dex), map(function(id) {
+            let poke = pokemon[id];
+            let data = poke.data;
+            var pokemon_name = l10n.names[data.name.toLowerCase()];
+            if (data.origin) 
+                pokemon_name += ':(' + l10n.forms[data.origin.toLowerCase()] + ')';
+            if (data.form)
+                pokemon_name += ':(' + l10n.forms[data.form.toLowerCase()] + ')';
+            if (poke.kind.title)
+                pokemon_name += ':(' + l10n.forms[poke.kind.title.toLowerCase()] + ')';
+            if (poke.kind.shiny)
                 pokemon_name += ':(' + l10n.forms['shiny'] + ')';
-            if (species[data[i].pvpoke_id].gender == 2)
-                pokemon_name += ':(' + l10n.forms['male'] + ')';
-            if (species[data[i].pvpoke_id].gender == 1)
-                pokemon_name += ':(' + l10n.forms['female'] + ')';
+            if (poke.pair) {
+                let {checked: pair_checked} = species[poke.pair.id] || default_specy();
+                if (poke.female && pair_checked && value.has(poke.pair.id))
+                    return "";
+                if (poke.male && !(pair_checked && value.has(poke.pair.id)) || poke.female)
+                    pokemon_name += ':(' + l10n.forms[poke.gender] + ')';
+            }
             return pokemon_name;
-        }), join(', '))]
-    }), filter(([key, value]) => value), 
+        }), filter(name => name), join(', '))]
+    }), filter(([_key, value]) => value), 
     map(([key, value]) => '§' + key + ': ' + value + ';\n'),
     join(''));
     if (!result)
         return '';
     result = l10n.phrases.caption + '\n\n' + result;
     result += '\n' + l10n.phrases.caption2 + '\n';
-    result += chain(filters.entries(), filter(([key, value]) => groups.get(key).value), map(([key, fn]) => fn(l10n, special)), integrate(), join(''));
-    if (!special)
-        result += '&!' + l10n.filters['shiny'] + '&!' + l10n.filters['purified'];
+    result += chain(object_keys(filters), filter(key => groups[key].value), map(key => filters[key](l10n)), integrate(), join(''));
+    if (!shiny)
+        result += '&!' + l10n.filters['shiny'];
+    if (!shiny) // && !legendary
+        result += '&!' + l10n.filters['purified'];
+    if (!costume)
+        result += '&!' + l10n.filters['costume'];
     result += '&!' + l10n.filters['shadow'] + '&!' + l10n.filters['traded'] + '&!4*;\n\n' + l10n.phrases.postscript;
     return result;
 }
 
-function generate_compact(l10n, special) {
+function generate_compact(l10n) {
     let result = '';
     let first, last;
     for (let i = 0; i < data.length; ++i) {
-        let {section, gender} = species[data[i].pvpoke_id] || default_specy();
-        if (gender === 0)
-            continue;
-        if (last && last+1 >= data[i].dex)
-            last = +data[i].dex;
-        else {
-            if (first) {
-                if (first < last)
-                    result += `${first}-${last},`;
-                else
-                    result += `${first},`;
+        for (let j = 0; j < data[i].genus.length; ++j) {
+            let {checked} = species[data[i].genus[j].id] || default_specy();
+            if (checked === 0)
+                continue;
+            if (last && last+1 >= data[i].dex)
+                last = +data[i].dex;
+            else {
+                if (first) {
+                    if (first < last)
+                        result += `${first}-${last},`;
+                    else
+                        result += `${first},`;
+                }
+                first = last = +data[i].dex;
             }
-            first = last = +data[i].dex;
+            break;
         }
     }
     if (!first)
@@ -369,38 +465,92 @@ function generate_compact(l10n, special) {
     else
         result += `${first}`;
 
-    function footer(l10n, pecial) {
-        let result = chain(filters.entries(), filter(([key, value]) => groups.get(key).value), map(([key, fn]) => fn(l10n, special)), integrate(), join(''));
-        if (!special)
-            result += '&!' + l10n.filters['shiny'] + '&!' + l10n.filters['purified'];
+    function footer(l10n) {
+        let result = chain(object_keys(filters), filter(key => groups[key].value), map(key => filters[key](l10n)), integrate(), join(''));
+        if (!shiny)
+            result += '&!' + l10n.filters['shiny'];
+        if (!shiny) // && !legendary
+            result += '&!' + l10n.filters['purified'];
+        if (!costume)
+            result += '&!' + l10n.filters['costume'];
         result += '&!' + l10n.filters['shadow'] + '&!' + l10n.filters['traded'];
         return result;
     }
-    result += footer(l10n, special);
+    result += footer(l10n);
     let l10n_en = l10n_by_id['en'].data;
     if (l10n !== l10n_en)
-        result += footer(l10n_en, special);
+        result += footer(l10n_en);
     result += '&!4*;' + l10n.phrases.postscript;
     return result;
 }
 
-function onchange(i) {
-    update(i);
+var selection_mode = false;
+var selection_size = 0;
+
+let last_click_time, last_click_index;
+
+function on_pokemon_click(i) {
+    if (selection_mode) {
+//        if (last_click_index === i && last_click_time + 300 >= Date.now())
+//            new_gender = old_gender - 1;
+//        last_click_index = i;
+//        last_click_time = Date.now();
+
+        if (selected[data[i].pvpoke_id]) {
+            selected[data[i].pvpoke_id] = false;
+        } else
+            selected[data[i].pvpoke_id] = true;
+        update(data[i]);
+    } else {
+        if (data[i].checked > 0) {
+            for (let j = 0; j < data[i].genus.length; ++j) {
+                uncheck_pokemon(data[i].genus[j]);
+            }
+        } else {
+            for (let j = 0; j < data[i].genus.length; ++j) {
+                if (!shiny && data[i].genus[j].kind.shiny || !costume && data[i].genus[j].kind.costume)
+                    continue;
+                check_pokemon(data[i].genus[j]);
+            }
+        }
+        generate();
+        save_all();
+    }    
+}
+
+function make_id(kind, male, female) {
+    let id = kind.bulbapedia_id.replace('/', '_');
+    if (male)
+        id = 'M' + id;
+    else if (female)
+        id = 'F' + id;
+    else
+        id = 'U' + id;
+    return $.escapeSelector(id);
+}
+
+function on_pokemon_genus_click(id) {
+    toggle_pokemon(pokemon[id]);
     generate();
     save_all();
 }
 
-function on_special_change() {
-    species['_special_'] = $('#special').prop('checked');
-    for (let i = 0; i < data.length; ++i)
-        update(i);
-    onfilter();
-    generate();
-    save_all();
+function on_selection_mode_change() {
+    if (selection_mode) {
+        selection_mode = false;
+        for (let i = 0; i < data.length; ++i) {
+            if (!selected[data[i].pvpoke_id])
+                continue;
+            selected[data[i].pvpoke_id] = false;
+            update(data[i]);
+        }
+    } else {
+        selection_mode = true;
+    }
 }
 
 function on_compact_change() {
-    species['_compact_'] = $('#compact').prop('checked');
+    list.compact = $('#compact').prop('checked');
     generate();
     save_all();
 }
@@ -469,7 +619,7 @@ function parse_filter(s) {
         }
         if (i >= s.length)
             return;
-        let section = s.substring(j, i).trim() || true;
+        let section = s.substring(j, i).trim();
         ++i; // :
         let result = parse_item();
         if (!result)
@@ -534,129 +684,143 @@ function parse_filter(s) {
     return r;
 }
 
-function make_appraiser(tree, l10n) {
-    let undefined_re = RegExp(`^(?:${l10n.filters["mythical"]}|${l10n.filters["legendary"]}|${l10n.filters["shiny"]}|${l10n.filters['genderunknown']}|${l10n.filters['female']}|${l10n.filters['male']}|${l10n.filters["costume"]}|${l10n.filters["eggsonly"]}|${l10n.filters["item"]}|${l10n.filters["megaevolve"]}|${l10n.filters["evolve"]}|${l10n.filters["tradeevolve"]}|${l10n.filters["evolvenew"]}|${l10n.filters['lucky']}|${l10n.filters['shadow']}|${l10n.filters['purified']}|${l10n.filters['defender']}|${l10n.filters['hp']}\\s*\\d*-?\\d*|${l10n.filters['cp']}\\s*\\d*-?\\d*|${l10n.filters['year']}\\s*\\d*-?\\d*|${l10n.filters['age']}\\s*\\d*-?\\d*|${l10n.filters['distance']}\\s*\\d*-?\\d*|${l10n.filters['buddy']}\\s*\\d*-?\\d*|${l10n.filters['traded']}|${l10n.filters['hatched']}|${l10n.filters['research']}|${l10n.filters['raid']}|${l10n.filters['remoteraid']}|${l10n.filters['exraid']}|${l10n.filters['megaraid']}|${l10n.filters['rocket']}|${l10n.filters['gbl']}|${l10n.filters['snapshot']}|${l10n.filters['candyxl']})$`, "i");
-
-    function appraiser(node) {
-        switch (node.op) {
-        case "and":
-        case "or": {
-            let op1 = appraiser(node.arg[0]);
-            let op2 = appraiser(node.arg[1]);
-            return record => op1(record) + op2(record);
-        }
-        case "not": {
-            let op = appraiser(node.arg);
-            return record => op(record);
-        }
-        case "family": {
-            let op = appraiser(node.arg);
-            return function(record) {
-                let res = 0;
-                for (let member of record.family)
-                    res += op(member);
-                return res;
-            };
-        }
-        case "keyword": {
-            if (!node.arg)
-                return record => 0;
-            if (node.arg.search(undefined_re) != -1)
-                return record => 1;
-            return record => +(l10n.names[record.name.toLowerCase()].toLowerCase().startsWith(node.arg) ||
-                               l10n.filters[record.type1.toLowerCase()].toLowerCase() === node.arg ||
-                               record.type2 !== "" && l10n.filters[record.type2.toLowerCase()].toLowerCase() === node.arg ||
-                               l10n.filters[record.origin_region.toLowerCase()].toLowerCase() === node.arg);
-        }
-        case "section":
-            return record => 0;
-        case "specy":
-            return record => +(l10n.names[record.name.toLowerCase()].toLowerCase() === node.arg);
-        case "form":
-            if (l10n.forms['male'].toLowerCase() === node.arg)
-                return record => 1;
-            if (l10n.forms['female'].toLowerCase() === node.arg)
-                return record => 1;
-            if (l10n.forms['shiny'].toLowerCase() === node.arg)
-                return record => 1;
-            return record => +(record.form !== "" && l10n.forms[record.form.toLowerCase()].toLowerCase() === node.arg || 
-                               record.origin !== "" && l10n.forms[record.origin.toLowerCase()].toLowerCase() === node.arg);
-        }
-    }
-    if (!tree)
-        return record => 0;
-    return appraiser(tree);
-}
-
 function make_checker(tree, l10n) {
     let none = {}
     let unclear = {}
-    
+
+    function declare(x, v) {
+        return {valid: x, value: v};
+    }
+
+    function evaluate(x) {
+        return {valid: x, value: +!!x};
+    }
+
+    function union(x, y) {
+        if (x.length === 0)
+            return y;
+        if (y.length === 0)
+            return x;
+        let i = 0, j = 0;
+        let result = [];
+        while (i < x.length || j < y.length) {
+            if (i < x.length && j < y.length && x[i] === y[j]) {
+                result.push(x[i]);
+                ++i;
+                ++j;
+            } else if (i < x.length && (j === y.length || x[i] < y[j])) {
+                result.push(x[i]);
+                ++i;
+            } else if (j < y.length && (i === x.length || x[i] > y[j])) {
+                result.push(y[j]);
+                ++j;
+            } else 
+                break;
+        }
+        return result;
+    }
+
+    function intersection(x, y) {
+        if (x.length === 0)
+            return x;
+        if (y.length === 0)
+            return y;
+        let i = 0, j = 0;
+        let result = [];
+        while (i < x.length || j < y.length) {
+            if (i < x.length && j < y.length && x[i] === y[j]) {
+                result.push(x[i]);
+                ++i;
+                ++j;
+            } else if (i < x.length && (j === y.length || x[i] < y[j])) {
+                ++i;
+            } else if (j < y.length && (i === x.length || x[i] > y[j])) {
+                ++j;
+            } else 
+                break;
+        }
+        return result;
+    }
+
     function or(op1, op2) {
         return function(record) {
             let x = op1(record);
-            if (x && x !== none && x !== unclear)
+            if (x.valid === true)
                 return x;
             let y = op2(record);
-            if (x === none)
+            if (x.valid === none)
                 return y;
-            if (y === none)
+            if (y.valid === none)
                 return x;
-            if (y && y !== unclear)
-                return y;
-            if (x === unclear || y === unclear)
-                return unclear;
-            return y;
+            if (y.valid === true)
+                return {valid: y.valid, value: x.value + y.value};
+            let x_tags = x.valid && x.valid !== unclear;
+            let y_tags = y.valid && y.valid !== unclear;
+            if (x_tags && y_tags)
+                return {valid: union(x.valid, y.valid), value: x.value + y.value};
+            if (x_tags)
+                return {valid: x.valid, value: x.value + y.value};
+            if (y_tags)
+                return {valid: y.valid, value: x.value + y.value};
+            if (x.valid === unclear || y.valid === unclear)
+                return {valid: unclear, value: x.value + y.value};
+            return {valid: y.valid, value: x.value + y.value};
         }; 
     }
 
     function and(op1, op2) {
         return function(record) { 
             let x = op1(record);
-            if (!x)
+            if (x.valid === false)
                 return x;
             let y = op2(record);
-            if (x === none)
+            if (x.valid === none)
                 return y;
-            if (y === none)
+            if (y.valid === none)
                 return x;
-            if (!y)
-                return y;
-            if (typeof(y) === "string")
-                return y;
-            if (typeof(x) === "string")
-                return x;
-            if (x === unclear || y === unclear)
-                return unclear;
-            return y;
+            if (y.valid === false)
+                return {valid: y.valid, value: x.value + y.value};
+            let x_tags = x.valid !== unclear && x.valid !== true;
+            let y_tags = y.valid !== unclear && y.valid !== true;
+            if (x_tags && y_tags)
+                return {valid: intersection(x.valid, y.valid), value: x.value + y.value};
+            if (x_tags)
+                return {valid: x.valid, value: x.value + y.value};
+            if (y_tags)
+                return {valid: y.valid, value: x.value + y.value};
+            if (x.valid === unclear || y.valid === unclear)
+                return {valid: unclear, value: x.value + y.value};
+            return {valid: y.valid, value: x.value + y.value};
         };
     }
 
     function not(op) {
         return function(record) {
             let x = op(record); 
-            if (x === none || x === unclear)
+            if (x.valid === none || x.valid === unclear)
                 return x;
-            return !x;
+            return {valid: !x.valid, value: x.value};
         };
     }
     
     function family(op) {
         return function(record) {
-            let res = none;
+            let res = {valid: none, value: 0};
             for (let member of record.family) {
                 let x = op(member);
-                if (x === none)
+                if (x.valid === none)
                     continue;
-                if (x && x !== unclear)
-                    return x;
-                if (res !== unclear)
-                    res = x;
+                if (x.valid && x.valid !== unclear)
+                    return {valid: x.valid, value: res.value + x.value};
+                if (res.valid !== unclear) {
+                    res.valid = x.valid;
+                    res.value += x.value;
+                }
             }
             return res;
         };
     }
-
+    
     let undefined_re = RegExp(`^(?:@[\\w -]+|\\d\\*|${l10n.filters["mythical"]}|${l10n.filters["legendary"]}|${l10n.filters["shiny"]}|${l10n.filters['genderunknown']}|${l10n.filters['female']}|${l10n.filters['male']}|${l10n.filters["costume"]}|${l10n.filters["eggsonly"]}|${l10n.filters["item"]}|${l10n.filters["megaevolve"]}|${l10n.filters["evolve"]}|${l10n.filters["tradeevolve"]}|${l10n.filters["evolvenew"]}|${l10n.filters['lucky']}|${l10n.filters['shadow']}|${l10n.filters['purified']}|${l10n.filters['defender']}|${l10n.filters['hp']}\\s*\\d*-?\\d*|${l10n.filters['cp']}\\s*\\d*-?\\d*|${l10n.filters['year']}\\s*\\d*-?\\d*|${l10n.filters['age']}\\s*\\d*-?\\d*|${l10n.filters['distance']}\\s*\\d*-?\\d*|${l10n.filters['buddy']}\\s*\\d*-?\\d*|${l10n.filters['traded']}|${l10n.filters['hatched']}|${l10n.filters['research']}|${l10n.filters['raid']}|${l10n.filters['remoteraid']}|${l10n.filters['exraid']}|${l10n.filters['megaraid']}|${l10n.filters['rocket']}|${l10n.filters['gbl']}|${l10n.filters['snapshot']}|${l10n.filters['candyxl']})$`, "i");
     let dex_re = /^(?:(\d+)|(\d*)-(\d*))$/;
     let evolve_re = RegExp(`^(?:${l10n.filters["evolve"]}|${l10n.filters["tradeevolve"]}|${l10n.filters["evolvenew"]})$`, "i");
@@ -673,7 +837,7 @@ function make_checker(tree, l10n) {
     
     function keyword(str) {
         if (str === "")
-            return record => none;
+            return _record => declare(none, 0);
         let dex = str.match(dex_re);
         if (dex) {
             let left, right;
@@ -683,36 +847,36 @@ function make_checker(tree, l10n) {
                 left = +dex[2];
             if (dex[3])
                 right = +dex[3];
-            return record => (!left || left <= +record.dex) && (!right || +record.dex <= right);
+            return record => declare((!left || left <= +record.data.dex) && (!right || +record.data.dex <= right), 0);
         }
         if (str.search(evolve_re) != -1)
-            return record => record.evolve;
+            return record => declare(!!record.data.evolve, 1);
         if (str.search(megaevolve_re) != -1)
-            return record => record.megaevolve;
+            return record => declare(!!record.data.megaevolve, 1);
         if (str.search(item_re) != -1)
-            return record => record.item;
+            return record => declare(!!record.data.item, 1);
         if (str.search(eggsonly_re) != -1)
-            return record => record.eggsonly;
-        // if (str.search(costume_re) != -1)
-            // return record => record.costume;
+            return record => declare(!!record.data.eggsonly, 1);
+        if (str.search(costume_re) != -1)
+            return record => declare(!!record.kind.costume, 1);
         if (str.search(male_re) != -1)
-            return record => record.male && (!record.female || unclear);
+            return record => declare(!!record.male, 1);
         if (str.search(female_re) != -1)
-            return record => record.female && (!record.male || unclear);
+            return record => declare(!!record.female, 1);
         if (str.search(genderunknown_re) != -1)
-            return record => !record.male && !record.female;
+            return record => declare(!record.male && !record.female, 1);
         if (str.search(shiny_re) != -1)
-            return record => record.shiny;
+            return record => declare(!!record.kind.shiny, 1);
         if (str.search(legendary_re) != -1)
-            return record => record.legendary;
+            return record => declare(!!record.data.legendary, 1);
         if (str.search(mythical_re) != -1)
-            return record => record.mythical;
+            return record => declare(!!record.data.mythical, 1);
         if (str.search(undefined_re) != -1)
-            return record => unclear;
-        return record => l10n.names[record.name.toLowerCase()].toLowerCase().startsWith(str) ||
-                         l10n.filters[record.type1.toLowerCase()].toLowerCase() === str ||
-                         record.type2 !== "" && l10n.filters[record.type2.toLowerCase()].toLowerCase() === str ||
-                         l10n.filters[record.origin_region.toLowerCase()].toLowerCase() === str;
+            return _record => declare(unclear, 1);
+        return record => evaluate(l10n.names[record.data.name.toLowerCase()].toLowerCase().startsWith(str) ||
+                                  l10n.filters[record.data.type1.toLowerCase()].toLowerCase() === str ||
+                                  record.data.type2 !== "" && l10n.filters[record.data.type2.toLowerCase()].toLowerCase() === str ||
+                                  l10n.filters[record.data.origin_region.toLowerCase()].toLowerCase() === str);
     }
     
     function checker(node) {
@@ -728,32 +892,38 @@ function make_checker(tree, l10n) {
         case "keyword":
             return keyword(node.arg);
         case "section":
-            return record => node.arg;
+            return _record => ({valid: node.arg ? [node.arg] : [], value: 0});
         case "specy":
-            return record => l10n.names[record.name.toLowerCase()].toLowerCase() === node.arg;
+            return record => evaluate(l10n.names[record.data.name.toLowerCase()].toLowerCase() === node.arg);
         case "form":
             if (l10n.forms['male'].toLowerCase() === node.arg)
-                return record => record.male && (!record.female || unclear);
+                return record => declare(!!record.male, 1);
             if (l10n.forms['female'].toLowerCase() === node.arg)
-                return record => record.female && (!record.male || unclear);
+                return record => declare(!!record.female, 1);
             if (l10n.forms['shiny'].toLowerCase() === node.arg)
-                return record => record.shiny;
-            return record => record.form !== "" && l10n.forms[record.form.toLowerCase()].toLowerCase() === node.arg || 
-                             record.origin !== "" && l10n.forms[record.origin.toLowerCase()].toLowerCase() === node.arg;
+                return record => declare(!!record.kind.shiny, 1);
+            return record => evaluate(record.data.form !== "" && l10n.forms[record.data.form.toLowerCase()].toLowerCase() === node.arg || 
+                                      record.kind.title !== "" && l10n.forms[record.kind.title.toLowerCase()].toLowerCase() === node.arg ||
+                                      record.data.origin !== "" && l10n.forms[record.data.origin.toLowerCase()].toLowerCase() === node.arg);
         }
     }
     if (!tree)
-        return record => false;
+        return _record => declare(false, 0);
     return checker(tree);
 }
 
 function onfilter() {
-    let l10n = l10n_by_id[$('#language').val()].data;
-    let check = make_checker(parse_filter($('#filter').val()), l10n);
-    let special = $('#special').prop('checked');
+    let l10n = l10n_by_id[storage.language].data;
+    let checker = make_checker(parse_filter($('#filter').val()), l10n);
     for (let i = 0; i < data.length; ++i) {
-        var mon = $('#' + data[i].pvpoke_id);
-        if (check(data[i]) && (!data[i].special || special))
+        let mon = $('#' + data[i].pvpoke_id);
+        let checked = false;
+        for (let j = 0; j < data[i].genus.length; ++j) {
+            if (!checker(data[i].genus[j]).valid)
+                continue;
+            checked = true;
+        }
+        if (checked)
             mon.show();
         else
             mon.hide();
@@ -761,100 +931,183 @@ function onfilter() {
 }
 
 function on_list_change() {
-    $('#list input[type=text]').val($('#list select').val()).css('color', 'black');
     if ($('#list select option').length === 0)
-        on_list_new();
+        on_list_new("My first filter");
     load_list();
 }   
 
-function on_list_input() {
+function on_list_edit() {
     var old_name = $('#list select').val();
-    var name = $('#list input[type=text]').val();
-    if (name == old_name)
-        return;
-    if ($('#list select option[value="' + $.escapeSelector(name) + '"]').length != 0) {
-        $('#list input[type=text]').css('color', 'red');
-        return;
+    var name = old_name;
+    while (true) {
+        name = prompt("Enter new name", name);
+        if (!name || name === old_name)
+            return;
+        if (!(name in storage.lists))
+            break;
+        alert(`The "${name}" list already exist`);
     }
     storage.lists[name] = storage.lists[old_name];
     delete storage.lists[old_name];
     $('#list select option:selected').prop('value', name).text(name)
-    $('#list input[type=text]').css('color', 'black');
     save_all();
+    $('#settings_toolbox').hide();
 }
 
-function on_list_new() {
-    for (var i = 1; ; ++i) {
-        var name = "New filter #" + i;
-        if ($('#list select option[value="' + $.escapeSelector(name) + '"]').length == 0)
-            break;
+function on_list_new(name) {
+    if (!name) {
+        while (true) {
+            name = prompt("Enter list name");
+            if (!name)
+                return;
+            if (!(name in storage.lists))
+                break;
+            alert(`The "${name}" list already exist`);
+        }
     }
     $('#list select').append($('<option></option>').prop('value', name).text(name));
     $('#list select option:last-child').prop('selected', true);
-    storage.lists[name] = {};
+    storage.lists[name] = {
+        species: {},
+        _version_: 1,
+        compact: false,
+    };
     save_all();
     on_list_change();
+    $('#settings_toolbox').hide();
 }
 
 function on_list_delete() {
+    if (!confirm("Delete the list?"))
+        return;
     var name = $('#list select').val();
     $('#list select option:selected').remove();
     delete storage.lists[name];
     save_all();
     on_list_change();
+    $('#settings_toolbox').hide();
 }
         
 function on_textarea_focus() {
     $('textarea').select();
 }
 
-var toolbox_specy_id
+function update_toolbox_body_height(data) {
+    $(`#${data.pvpoke_id}_toolbox .body`).css('max-height', 'calc(100vh - ' + ($(`#${data.pvpoke_id}_toolbox .head`).outerHeight() + $(`#${data.pvpoke_id}_toolbox .tags`).outerHeight()) + 'px)');
+}
+
+function on_tag_new(data) {
+    let tag_name = prompt('Enter tag name');
+    if (!tag_name)
+        return;
+    if (tag_name in tags) {
+        alert(`The "${tag_name}" tag already exists.`);
+        return;
+    }
+    let elem = $(`<span class="tag" id="${$.escapeSelector(data.pvpoke_id+"_tag_"+tag_name)}">${tag_name}</span>`);
+    $(`#${data.pvpoke_id}_toolbox .tags`).append(elem);
+    update_toolbox_body_height(data);
+    elem.click(() => on_tag_click(data, tag_name));
+    return on_tag_click(data, tag_name);
+}
+
+function on_tag_click(data, tag_name) {
+    if (data.tags[tag_name] === data.genus.length) {
+        for (let j = 0; j < data.genus.length; ++j) {
+            remove_pokemon_tag(data.genus[j], tag_name);
+        }
+    } else {
+        for (let j = 0; j < data.genus.length; ++j) {
+            add_pokemon_tag(data.genus[j], tag_name);
+        }
+    }
+    update_toolbox_body_height(data);
+    generate();
+    save_all();
+}
+
+function add_pokemon_tag(poke, tag_name) {
+    if (!(poke.id in species))
+        species[poke.id] = default_specy();
+    let {checked, tags: poke_tags} = species[poke.id];
+    let index = lower_bound(poke_tags, tag_name);
+    if (poke_tags[index] === tag_name)
+        return;
+    if (checked && poke_tags.length === 0)
+        remove_from_section(poke, "");
+    poke_tags.splice(index, 0, tag_name);
+    if (checked)
+        add_to_section(poke, tag_name);
+    if (!(tag_name in tags))
+        tags[tag_name] = 0;
+    tags[tag_name] += 1;
+    if (!(tag_name in poke.data.tags))
+        poke.data.tags[tag_name] = 0;
+    poke.data.tags[tag_name] += 1;
+    let container = $(`#${$.escapeSelector(poke.data.pvpoke_id+"_tag_"+tag_name)}`);
+    container.addClass('partial');
+    if (poke.data.tags[tag_name] === poke.data.genus.length)
+        container.addClass('full');
+    update(poke.data);
+}
+
+function remove_pokemon_tag(poke, tag_name) {
+    if (!(poke.id in species))
+        species[poke.id] = default_specy();
+    let {checked, tags: poke_tags} = species[poke.id];
+    let index = lower_bound(poke_tags, tag_name);
+    if (poke_tags[index] !== tag_name)
+        return;
+    if (checked)
+        remove_from_section(poke, tag_name);
+    poke_tags.splice(index, 1);
+    if (checked && poke_tags.length === 0)
+        add_to_section(poke, "");
+    tags[tag_name] -= 1;
+    if (tags[tag_name] === 0)
+        delete tags[tag_name];
+    poke.data.tags[tag_name] -= 1;
+    if (poke.data.tags[tag_name] === 0)
+        delete poke.data.tags[tag_name];
+    let container = $(`#${$.escapeSelector(poke.data.pvpoke_id+"_tag_"+tag_name)}`);
+    container.removeClass('full');
+    if (!poke.data.tags[tag_name])
+        container.removeClass('partial');
+    update(poke.data);
+}
 
 function on_pokemon_context(e, i) {
     e.preventDefault();
-    toolbox_specy_id = i;
-    $('.toolbox .pokemon img').attr('src', image(i));
-    $('#section select option').remove();
-    var used = {'': true};
-    var sections = [''];
-    for (let i = 0; i < data.length; ++i) {
-        let {section, gender} = species[data[i].pvpoke_id] || default_specy();
-        if (used[section])
-            continue;
-        used[section] = true;
-        sections.push(section);
+
+    if (!data[i].toolbox_ready) {
+        let genus = data[i].genus;
+        for (let j = 0; j < genus.length; ++j) {
+            $(`#${genus[j].id}`).prepend(`<img src="${fandom_image(genus[j].kind.fandom_id, 48)}"/>`);
+        }
+        data[i].toolbox_ready = true;
     }
-    sections.sort();
-    for (let i = 0; i < sections.length; ++i)
-        $('#section select').append(`<option value="${sections[i]}">${sections[i]}</option>`);
-    let {section, gender} = species[data[i].pvpoke_id] || default_specy();
-    $('#section input[type=text]').val(section);
-    $('.toolbox').show();
-}
 
-function on_section_change() {
-    $('#section input[type=text]').val($('#section select').val())
-    $('#section select option:first-child').prop('selected', true);
-    on_section_input();
-}
+    let tags_container = $(`#${data[i].pvpoke_id}_toolbox .tags`)
+    tags_container.find('> .tag').remove();
 
-function on_section_input() {
-}
+    let elem = $(`<span class="tag">+</span>`);
+    elem.click(() => on_tag_new(data[i]));
+    tags_container.append(elem);
 
-function on_toolbox_close(e) {
-    var new_section = $('#section input[type=text]').val();
-    if (!species[data[toolbox_specy_id].pvpoke_id])
-        species[data[toolbox_specy_id].pvpoke_id] = default_specy();
-    let {section: old_section, gender} = species[data[toolbox_specy_id].pvpoke_id];
-    if (gender !== 0 && (special || !data[toolbox_specy_id].special)) {
-        remove_from_section(toolbox_specy_id, old_section);
-        add_to_section(toolbox_specy_id, new_section);
+    let n_items = data[i].genus.length;
+    for (let tag_name of Object.keys(tags).sort((key1, key2) => +data[i].tags[key2] - +data[i].tags[key1] || (key1 > key2)-(key1 < key2))) {
+        let elem = $(`<span class="tag ${!data[i].tags[tag_name] ? "" : data[i].tags[tag_name] === n_items ? "full" : "partial"}" id="${$.escapeSelector(data[i].pvpoke_id+"_tag_"+tag_name)}">${tag_name}</span>`);
+        elem.click(() => on_tag_click(data[i], tag_name));
+        tags_container.append(elem);
     }
-    species[data[toolbox_specy_id].pvpoke_id].section = new_section;
-    $(`#${data[toolbox_specy_id].pvpoke_id} > u`).text(new_section);
-    toolbox_specy_id = undefined;
-    $('#section input[type=text]').val('');
-    $('.toolbox').hide();
+
+    $(`#${data[i].pvpoke_id}_toolbox`).show();
+
+    update_toolbox_body_height(data[i]);
+}
+
+function on_toolbox_close(_e, i) {
+    $(`#${data[i].pvpoke_id}_toolbox`).hide();
     generate();
     save_all();
 }
@@ -876,147 +1129,265 @@ function parse(e) {
         alert('Failed to parse');
         return;
     }
-    let best_l10n;
-    let best_appraisal = 0
+
+    let best_species;
+    let best_value = -1;
     for (let i = 0; i < l10n.length; ++i) {
-        // console.log(`Trying ${l10n[i].name}`);
-        let appraiser = make_appraiser(tree, l10n[i].data);
-
-        let appraisal = 0;
-        for (let i = 0; i < data.length; ++i) {
-            let male = data[i].male;
-            let female = data[i].female;
-            data[i].male = true;
-            data[i].female = false;
-            appraisal += appraiser(data[i]);
-            data[i].male = false;
-            data[i].female = true;
-            appraisal += appraiser(data[i]);
-            data[i].male = male;
-            data[i].female = female;
-        }
+        let checker = make_checker(tree, l10n[i].data);
         
-        // console.log(`${l10n[i].name} gaines ${appraisal} points.`);
-        if (best_appraisal < appraisal) {
-            best_l10n = l10n[i];
-            best_appraisal = appraisal;
+        let species = {};
+        let value = 0;
+        for (let id in pokemon) {
+            let r = checker(pokemon[id]);
+            value += r.value;
+            if (!r.valid)
+                continue;
+            let tags = [];
+            if (r.valid.length)
+                tags = r.valid;
+            species[id] = {tags: tags, checked: true};
         }
-    }
-    // console.log(`The best l10n is ${best_l10n.name}`);
-    
-    let checker = make_checker(tree, best_l10n.data);
-    
-    let species = {};
-    for (let i = 0; i < data.length; ++i) {
-        let male = data[i].male;
-        let female = data[i].female;
-        let gender = 0;
-        let section = "";
-        data[i].male = true;
-        data[i].female = false;
-        let r = checker(data[i]);
-        if (r) {
-            gender += 2;
-            if (typeof(r) === "string")
-                section = r;
-        }
-        data[i].male = false;
-        data[i].female = true;
-        r = checker(data[i]);
-        if (r) {
-            gender += 1;
-            if (typeof(r) === "string")
-                section = r;
-        }
-        data[i].male = male;
-        data[i].female = female;
-        if (!gender)
-            continue;
-        species[data[i].pvpoke_id] = {section: section, gender: gender};
-        if (data[i].special)
-            species['_special_'] = true;
-    }
 
-    storage.lists[$('#list select').val()] = species;
+        // console.log(`${l10n[i].name} gaines ${value} points.`);
+        if (best_value < value) {
+            best_species = species;
+            best_value = value;
+        }
+    }
+    
+    list.species = best_species;
     save_all();
     load_list();
 }
 
 function on_language_change() {
     storage.language = $('#language').val();
-    for (let i = 0; i < data.length; ++i)
-        update(i);
+    // for (let i = 0; i < data.length; ++i)
+        // update(i);
+    onfilter();
     generate();
     save_all();
 }
 
-$(document).ready(function() {
-    var r = 0;
-    function request_json(filename, callback) {
-        ++r;
-        $.getJSON(filename, function(data) {
-            callback(data);
-            console.log(`Loaded "${filename}"`);
-            --r;
-            if (r == 0)
-                load_all();
-        });
-    }
-    
-    request_json("l10n/list.json", function(_l10n) {
-        l10n = _l10n;
-        l10n_by_id = {};
-        for (let i = 0; i < l10n.length; ++i) {
-            $('#language').append(`<option value=${l10n[i].id}>${l10n[i].name}</option>`);
-            l10n_by_id[l10n[i].id] = l10n[i];
-            request_json("l10n/" + l10n[i].filename, (i => function(data) {
-                l10n[i].data = {};
-                for (let section in data) {
-                    let translations = {};
-                    let originals = {};
-                    l10n[i].data[section.toLowerCase()] = translations;
-                    l10n[i].data['original_' + section.toLowerCase()] = originals;
-                    for (let key in data[section]) {
-                        translations[key.toLowerCase()] = data[section][key];
-                        originals[data[section][key].toLowerCase()] = key;
-                    }
-                }
-            })(i))
-        }
-    });
-    request_json("pogo_data.json", function(_data) {
-        data = _data;
-        index_by_name = {};
-        var family = {};
-        var content = $('div.content');
-        for (let i = 0; i < data.length; ++i) {
-            if (i == 0 || data[i].region != data[i-1].region)
-                content.append('<div class="region"><span>' + data[i].region + '</span><hr/></div>');
-            content.append(`<span class="dioecious_container" title="${data[i].dex}. ${data[i].name}${(data[i].origin ? ' (' + data[i].origin + ')' : '')}${(data[i].form ? ' (' + data[i].form + ')' : '')}${(data[i].shiny ? ' ✨' : '')}" id="${data[i].pvpoke_id}"><input type="radio" name="${data[i].pvpoke_id}" value="3"><input type="radio" name="${data[i].pvpoke_id}" value="2"><input type="radio" name="${data[i].pvpoke_id}" value="1"><input type="radio" name="${data[i].pvpoke_id}" value="0" checked><s></s><u></u><img src="${image(i)}"></span>`);
-            $(`#${data[i].pvpoke_id} > input`).change(() => onchange(i));
-            $(`#${data[i].pvpoke_id}`).bind('contextmenu', e => on_pokemon_context(e, i));
-            index_by_name[`${data[i].name}#${data[i].origin}${data[i].form}#${data[i].shiny}`] = i;
-            if (family[data[i].family] === undefined)
-                family[data[i].family] = [];
-            family[data[i].family].push(data[i]);
-            data[i].family = family[data[i].family];
-        }
-        prepare();
-    });
+function on_menu_click() {
+    $('#settings_toolbox').show();
+}
 
-    $('#special').bind('change', on_special_change);
+function bind_triggers() {
+    for (let i = 0; i < data.length; ++i) {
+        if (data[i].kinds.length == 0)
+            continue;
+        let genus = data[i].genus;
+        for (let j = 0; j < genus.length; ++j) {
+            let container = $(`#${genus[j].id}`);
+            container.click(() => on_pokemon_genus_click(genus[j].id));
+        }
+        $(`#${data[i].pvpoke_id}_toolbox`).bind('click', e => on_toolbox_close(e, i));
+        $(`#${data[i].pvpoke_id}_toolbox > div > div`).bind('click', e => e.stopPropagation());
+        $(`#${data[i].pvpoke_id}_toolbox div.back`).bind('click', e => on_toolbox_close(e, i));
+        // $(`#${data[i].pvpoke_id} > input`).change(() => onchange(i));
+        // $(`#${data[i].pvpoke_id}`).bind('contextmenu', e => on_pokemon_context(e, i));
+        let container = $(`#${data[i].pvpoke_id}`);
+        container.click(() => on_pokemon_click(i));
+        container.bind('contextmenu', e => on_pokemon_context(e, i));
+    }
+
+    $('#selection_mode').bind('change', on_selection_mode_change);
     $('#compact').bind('change', on_compact_change);
     $('#filter').bind('input', onfilter);
     $('#list select').bind('change', on_list_change);
-    $('#list input[type=text]').bind('input', on_list_input);
-    $('#list input[type=button]:first-child').bind('click', on_list_new);
-    $('#list input[type=button]:last-child').bind('click', on_list_delete);
+    $('#edit_list_button').click(on_list_edit);
+    $('#new_list_button').click(() => on_list_new());
+    $('#delete_list_button').click(on_list_delete);
+    $('#language').bind('change', on_language_change);
     $('textarea').bind('focus', on_textarea_focus);
     $('textarea').bind('paste', parse);
     $('textarea').bind('input', generate);
-    $('#language').bind('change', on_language_change);
-    $('#section select').bind('change', on_section_change);
-    $('#section input[type=text]').bind('input', on_section_input);
-    $('.toolbox').bind('click', on_toolbox_close);
-    $('.toolbox div div').bind('click', e => e.stopPropagation());
+    $('#menu').click(on_menu_click);
+    $(`#settings_toolbox`).bind('click', () => $('#settings_toolbox').hide());
+    $(`#settings_toolbox > div > div`).bind('click', e => e.stopPropagation());
+    $(`#settings_toolbox div.back`).bind('click', () => $('#settings_toolbox').hide());
+}
+
+function process_l10n_data(_l10n) {
+    l10n = _l10n;
+    l10n_by_id = {};
+    for (let i = 0; i < l10n.length; ++i) {
+        $('#language').append(`<option value="${l10n[i].id}">${l10n[i].name}</option>`);
+        l10n_by_id[l10n[i].id] = l10n[i];
+        request_json("l10n/" + l10n[i].filename, function(data) {
+            l10n[i].data = {};
+            for (let section in data) {
+                let translations = {};
+                // let originals = {};
+                l10n[i].data[section.toLowerCase()] = translations;
+                // l10n[i].data['original_' + section.toLowerCase()] = originals;
+                for (let key in data[section]) {
+                    translations[key.toLowerCase()] = data[section][key];
+                    // originals[data[section][key].toLowerCase()] = key;
+                }
+            }
+        });
+    }
+}
+
+function prepare_data() {
+    pokemon = {};
+    var family = {};
+    for (let i = 0; i < data.length; ++i) {
+        data[i].genus = [];
+        data[i].shiny = false;
+        data[i].costume = false;
+        data[i].male = false;
+        data[i].female = false;
+        data[i].genderunknown = false;
+        data[i].tags = {};
+
+        if (family[data[i].family] === undefined)
+            family[data[i].family] = [];
+        family[data[i].family].push(data[i]);
+        data[i].family = family[data[i].family];
+
+        for (let j = 0; j < data[i].kinds.length; ++j) {
+            for (let [male, female, gender] of [[true, false, "male"], [false, true, "female"], [false, false, "genderunknown"]]) {
+                if (male && data[i].kinds[j].male || female && data[i].kinds[j].female || !male && !data[i].kinds[j].male && !female && !data[i].kinds[j].female) {
+                    let id = data[i].pvpoke_id + '_';
+                    if (data[i].kinds[j].suffix)
+                        id += data[i].kinds[j].suffix + '_';
+                    if (male)
+                        id += 'm';
+                    if (female)
+                        id += 'f';
+                    if (!male && !female)
+                        id += 'u';
+                    if (data[i].kinds[j].shiny)
+                        id += 's';
+                    id = $.escapeSelector(id);
+                    if (id in pokemon)
+                        console.error(`Dublicate pokemon id "${id}"`);
+                    pokemon[id] = {
+                        id: id,
+                        data: data[i],
+                        kind: data[i].kinds[j],
+                        male: male,
+                        female: female,
+                        genus: data[i].genus,
+                        gender: gender
+                    };
+                    data[i].genus.push(pokemon[id]);
+                    data[i].shiny = data[i].shiny || data[i].kinds[j].shiny;
+                    data[i].costume = data[i].costume || data[i].kinds[j].costume;
+                    data[i].male = data[i].male || male;
+                    data[i].female = data[i].female || female;
+                    data[i].genderunknown = data[i].genderunknown || !(male || female);
+                }
+            }
+        }
+        for (let j = 1; j < data[i].genus.length; ++j) {
+            if (data[i].genus[j-1].kind.title != data[i].genus[j].kind.title ||
+                data[i].genus[j-1].kind.shiny != data[i].genus[j].kind.shiny)
+                continue;
+            data[i].genus[j-1].pair = data[i].genus[j];
+            data[i].genus[j].pair = data[i].genus[j-1];
+        }
+    }
+}
+
+function prepare_content() {
+    var content = $('div.content');
+    for (let i = 0; i < data.length; ++i) {
+        if (data[i].kinds.length == 0)
+            continue;
+        if (i === 0 || data[i].region !== data[i-1].region)
+            content.append('<div class="region"><span>' + data[i].region + '</span><hr/></div>');
+        let title = `${data[i].dex}. ${data[i].name}${(data[i].origin ? ' (' + data[i].origin + ')' : '')}${(data[i].form ? ' (' + data[i].form + ')' : '')}`;
+        content.append(`<span class="pokemon" title="${title}" id="${data[i].pvpoke_id}" style="display: none;"><s></s><i></i><u></u><img src="${image(i)}"></span>`);
+        let kinds_html = `<div id="${data[i].pvpoke_id}_toolbox" class="toolbox" style="display: none;"><div><div><div class="head"><div class="back">←</div><div class="icon"><img class="icon" src="${image(i)}"></div><div class="title">${title}</div></div><div class="tags"></div><div class="body">`;
+
+        kinds_html += '<div class="section"><div class="section">';
+        let genus = data[i].genus;
+        for (let j = 0; j < genus.length; ++j) {
+            if (j > 0) {
+                if (genus[j-1].kind.title != genus[j].kind.title)
+                    kinds_html += '</div></div><div class="section"><div class="section">';
+                else if (genus[j-1].kind.shiny != genus[j].kind.shiny)
+                    kinds_html += '</div><div class="section">';
+            }
+            let title_genus = `${genus[j].kind.title ? ' (' + genus[j].kind.title + ')' : ''}${genus[j].male ? ' ♂' : ''}${genus[j].female ? ' ♀' : ''}${(genus[j].kind.shiny ? ' ✨' : '')}`;
+            kinds_html += `<span class="pokemon${genus[j].male ? " male" : ""}${genus[j].female ? " female" : ""}${genus[j].kind.shiny ? " shiny" : ""}" title="${title}\n${title_genus}" id="${genus[j].id}"><s></s><i></i><u></u></span>`;
+        }
+        kinds_html += '</div></div>';
+
+        kinds_html += '</div></div></div></div>';
+        content.append(kinds_html);
+    }
+}
+
+function check_l10n() {
+    for (let k = 0; k < l10n.length; ++k) {
+        for (let i = 0; i < data.length; ++i) {
+            if (data[i].name && !(data[i].name.toLowerCase() in l10n[k].data.names)) {
+                console.warn(`"${data[i].name}" is missing from "${l10n[k].name}"`);
+                l10n[k].data.names[data[i].name.toLowerCase()] = data[i].name;
+            }
+            if (data[i].origin && !(data[i].origin.toLowerCase() in l10n[k].data.forms)) {
+                console.warn(`"${data[i].origin}" is missing from "${l10n[k].name}"`);
+                l10n[k].data.forms[data[i].origin.toLowerCase()] = data[i].origin;
+            }
+            if (data[i].form && !(data[i].form.toLowerCase() in l10n[k].data.forms)) {
+                console.warn(`"${data[i].form}" is missing from "${l10n[k].name}"`);
+                l10n[k].data.forms[data[i].form.toLowerCase()] = data[i].form;
+            }
+            for (let j = 0; j < data[i].genus.length; ++j) {
+                if (data[i].genus[j].kind.title && !(data[i].genus[j].kind.title.toLowerCase() in l10n[k].data.forms)) {
+                    console.warn(`"${data[i].genus[j].kind.title}" is missing from "${l10n[k].name}"!`);
+                    l10n[k].data.forms[data[i].genus[j].kind.title.toLowerCase()] = data[i].genus[j].kind.title; 
+                }
+            }
+        }
+    }
+}
+
+function process_data(_data) {
+    data = _data;
+    prepare_data();
+    prepare_content();
+    prepare_structures();
+}
+
+function load_all() {
+    storage = JSON.parse(localStorage.getItem(location.pathname) || "{}");
+    if (!storage.lists)
+        storage.lists = {};
+    if (!storage.language)
+        storage.language = l10n[0].id;
+    for (let name in storage.lists) {
+        $('#list select').append($('<option></option>').prop('value', name).text(name));
+    }
+    $('#list select option:first-child').prop('selected', true);
+    $(`#language option[value=${storage.language}]`).prop('selected', true);
+
+    check_l10n();
+    on_list_change();
+    bind_triggers();
+}
+
+var n_requests = 0;
+function request_json(filename, callback) {
+    ++n_requests;
+    $.getJSON(filename, function(data) {
+        callback(data);
+        // console.log(`Loaded "${filename}"`);
+        --n_requests;
+        if (n_requests === 0)
+            load_all();
+    }).fail(function() {
+        console.log(`Failed to parse JSON data from "${filename}"`);
+        alert(`Failed to parse JSON data from "${filename}"`);
+    });
+}
+
+$(document).ready(function() {
+    request_json("l10n/list.json", process_l10n_data);
+    request_json("pogo_data.json", process_data);
 })

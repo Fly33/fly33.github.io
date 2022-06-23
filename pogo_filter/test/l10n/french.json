@@ -905,6 +905,7 @@
         "Shiny": "✨",
         "Alolan": "Forme d’Alola",
         "Galarian": "Forme de Galar",
+        "Hisuian": "Forme d’Hisui",
         "Armored": "Armored",
         "A": "A",
         "B": "B",
@@ -989,11 +990,15 @@
         "Ordinary": "Aspect Normal",
         "Resolute": "",
         "Aria": "Forme Chant",
-        "Pirouette": "",
+        "Pirouette": "Pirouette Forme",
         "Shock": "Module Choc",
         "Burn": "Module Pyro",
         "Chill": "Module Cryo",
-        "Douse": "Module Aqua"
+        "Douse": "Module Aqua",
+        "Small Size": "Taille Mini",
+        "Average Size": "Taille Normale",
+        "Large Size": "Taille Maxi",
+        "Super Size": "Taille Ultra"
     },
     "Filters": {
         "Normal": "Normal",
@@ -1022,6 +1027,7 @@
         "Kalos": "Kalos",
         "Alola": "Alola",
         "Galar": "Galar",
+        "Hisui": "Hisui",
         "Age": "âge",
         "Buddy": "Copain",
         "CandyXL": "bonbonL",
@@ -1055,12 +1061,16 @@
         "Snapshot": "photo",
         "Traded": "échangé",
         "TradeEvolve": "évolutionparéchange",
-        "Year": "année"
+        "Year": "année",
+        "XXS": "XXS",
+        "XS": "XS",
+        "XL": "XL",
+        "XXL": "XXL"
     },
     "Phrases": {
         "Caption": "Ma liste de souhaits (copier en entier et coller tel quel):",
         "Caption2": "Filtres d'addition (ne pas couper):",
-        "Postscript": "Pour changer de langue ou créer votre propre filtre, visitez fly33.github.io/pogo_filter/"
+        "Postscript": "Créez votre propre filtre sur fly33.github.io/pogo_filter/"
     },
     "UI": {
         "Filter": "Filtre rapide",

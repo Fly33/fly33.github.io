@@ -903,9 +903,9 @@
         "Male": "♂",
         "Female": "♀",
         "Shiny": "✨",
-
         "Alolan": "Alola-Form",
         "Galarian": "Galar-Form",
+        "Hisuian": "Hisui-Form",
         "Armored": "Armored",
         "A": "A",
         "B": "B",
@@ -990,11 +990,15 @@
         "Ordinary": "Standardform",
         "Resolute": "",
         "Aria": "Gesangsform",
-        "Pirouette": "",
+        "Pirouette": "Pirouette Forme",
         "Shock": "Blitzmodul",
         "Burn": "Flammenmodul",
         "Chill": "Gefriermodul",
-        "Douse": "Aquamodul"
+        "Douse": "Aquamodul",
+        "Small Size": "Größe S",
+        "Average Size": "Größe M",
+        "Large Size": "Größe L",
+        "Super Size": "Größe XL"
     },
     "Filters": {
         "Normal": "Normal",
@@ -1023,6 +1027,7 @@
         "Kalos": "Kalos",
         "Alola": "Alola",
         "Galar": "Galar",
+        "Hisui": "Hisui",
         "Age": "Alter",
         "Buddy": "Kumpel",
         "CandyXL": "bonbonxl",
@@ -1056,12 +1061,16 @@
         "Snapshot": "Schnappschuss",
         "Traded": "Getauscht",
         "TradeEvolve": "Tauschentwicklung",
-        "Year": "Jahr"
+        "Year": "Jahr",
+        "XXS": "XXS",
+        "XS": "XS",
+        "XL": "XL",
+        "XXL": "XXL"
     },
     "Phrases": {
         "Caption": "Meine wunschliste (ganz kopieren und so wie sie ist einfügen):",
         "Caption2": "Zusatzfilter (nicht abschneiden):",
-        "Postscript": "Um die sprache zu ändern oder einen eigenen filter zu erstellen, besuchen sie fly33.github.io/pogo_filter/"
+        "Postscript": "Erstellen Sie Ihren eigenen Filter auf fly33.github.io/pogo_filter/"
     },
     "UI": {
         "Filter": "Schnellfilter",
