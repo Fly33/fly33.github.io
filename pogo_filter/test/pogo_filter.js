@@ -833,6 +833,7 @@ function make_checker(tree, l10n) {
     let genderunknown_re = RegExp(`^${l10n.filters['genderunknown']}$`, "i");
     let shiny_re = RegExp(`^${l10n.filters["shiny"]}$`, "i");
     let legendary_re = RegExp(`^${l10n.filters["legendary"]}$`, "i");
+    let ultrabeasts_re = RegExp(`^${l10n.filters["ultrabeasts"]}$`, "i");
     let mythical_re = RegExp(`^${l10n.filters["mythical"]}$`, "i");
     
     function keyword(str) {
@@ -869,6 +870,8 @@ function make_checker(tree, l10n) {
             return record => declare(!!record.kind.shiny, 1);
         if (str.search(legendary_re) != -1)
             return record => declare(!!record.data.legendary, 1);
+        if (str.search(ultrabeasts_re) != -1)
+            return record => declare(!!record.data.ultrabeast, 1);
         if (str.search(mythical_re) != -1)
             return record => declare(!!record.data.mythical, 1);
         if (str.search(undefined_re) != -1)
@@ -992,10 +995,6 @@ function on_textarea_focus() {
     $('textarea').select();
 }
 
-function update_toolbox_body_height(data) {
-    $(`#${data.pvpoke_id}_toolbox .body`).css('max-height', 'calc(100vh - ' + ($(`#${data.pvpoke_id}_toolbox .head`).outerHeight() + $(`#${data.pvpoke_id}_toolbox .tags`).outerHeight()) + 'px)');
-}
-
 function on_tag_new(data) {
     let tag_name = prompt('Enter tag name');
     if (!tag_name)
@@ -1006,7 +1005,6 @@ function on_tag_new(data) {
     }
     let elem = $(`<span class="tag" id="${$.escapeSelector(data.pvpoke_id+"_tag_"+tag_name)}">${tag_name}</span>`);
     $(`#${data.pvpoke_id}_toolbox .tags`).append(elem);
-    update_toolbox_body_height(data);
     elem.click(() => on_tag_click(data, tag_name));
     return on_tag_click(data, tag_name);
 }
@@ -1021,7 +1019,6 @@ function on_tag_click(data, tag_name) {
             add_pokemon_tag(data.genus[j], tag_name);
         }
     }
-    update_toolbox_body_height(data);
     generate();
     save_all();
 }
@@ -1102,8 +1099,6 @@ function on_pokemon_context(e, i) {
     }
 
     $(`#${data[i].pvpoke_id}_toolbox`).show();
-
-    update_toolbox_body_height(data[i]);
 }
 
 function on_toolbox_close(_e, i) {
@@ -1302,7 +1297,7 @@ function prepare_content() {
             content.append('<div class="region"><span>' + data[i].region + '</span><hr/></div>');
         let title = `${data[i].dex}. ${data[i].name}${(data[i].origin ? ' (' + data[i].origin + ')' : '')}${(data[i].form ? ' (' + data[i].form + ')' : '')}`;
         content.append(`<span class="pokemon" title="${title}" id="${data[i].pvpoke_id}" style="display: none;"><s></s><i></i><u></u><img src="${image(i)}"></span>`);
-        let kinds_html = `<div id="${data[i].pvpoke_id}_toolbox" class="toolbox" style="display: none;"><div><div><div class="head"><div class="back">←</div><div class="icon"><img class="icon" src="${image(i)}"></div><div class="title">${title}</div></div><div class="tags"></div><div class="body">`;
+        let kinds_html = `<div id="${data[i].pvpoke_id}_toolbox" class="toolbox" style="display: none;"><div><div><div><div class="head"><div class="back">←</div><div class="icon"><img class="icon" src="${image(i)}"></div><div class="title">${title}</div></div><div class="tags"></div><div class="body">`;
 
         kinds_html += '<div class="section"><div class="section">';
         let genus = data[i].genus;
@@ -1318,7 +1313,7 @@ function prepare_content() {
         }
         kinds_html += '</div></div>';
 
-        kinds_html += '</div></div></div></div>';
+        kinds_html += '</div></div></div></div></div>';
         content.append(kinds_html);
     }
 }
