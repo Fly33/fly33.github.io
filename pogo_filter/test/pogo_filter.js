@@ -1386,3 +1386,8 @@ $(document).ready(function() {
     request_json("l10n/list.json", process_l10n_data);
     request_json("pogo_data.json", process_data);
 })
+
+document.documentElement.style.setProperty('--toolbox-max-height', `${window.innerHeight}px`);
+window.addEventListener('resize', () => {
+  document.documentElement.style.setProperty('--toolbox-max-height', `${window.innerHeight}px`);
+});

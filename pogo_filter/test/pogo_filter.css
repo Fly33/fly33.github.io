@@ -123,8 +123,8 @@ label {
     position: fixed;
     left: 0;
     top: 0;
-    width: 100vh;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     display:table;
     padding: 0;
     margin: 0;
@@ -139,7 +139,7 @@ label {
 .toolbox > div > div {
     width: 100%;
     max-width: 50ex;
-    max-height: 100vh;
+    max-height: var(--toolbox-max-height, 100vh);
     box-sizing: border-box;
     margin-left: auto;
     margin-right: auto;
