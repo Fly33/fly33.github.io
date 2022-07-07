@@ -165,6 +165,29 @@ label {
     font-size: 27pt;
     color: white;
 }
+.toolbox .head .back::before {
+	border: 2px solid white;
+    border-top: none;
+    border-right: none;
+	transform: rotate(45deg);
+	width: 36%;
+	height: 36%;
+	position: absolute;
+	left: 32%;
+	top: 32%;
+	content: "";
+}
+.toolbox .head .back::after {
+    border: 1px solid white;
+	border-right: none;
+    border-left: none;
+	width: 50%;
+	height: 0px;
+	position: absolute;
+	left: 25%;
+	top: 50%;
+	content: "";
+}
 .toolbox .head .icon {
     background-color: #ddd;
     width: 48px;
