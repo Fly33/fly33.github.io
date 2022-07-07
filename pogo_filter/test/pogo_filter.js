@@ -1297,7 +1297,7 @@ function prepare_content() {
             content.append('<div class="region"><span>' + data[i].region + '</span><hr/></div>');
         let title = `${data[i].dex}. ${data[i].name}${(data[i].origin ? ' (' + data[i].origin + ')' : '')}${(data[i].form ? ' (' + data[i].form + ')' : '')}`;
         content.append(`<span class="pokemon" title="${title}" id="${data[i].pvpoke_id}" style="display: none;"><s></s><i></i><u></u><img src="${image(i)}"></span>`);
-        let kinds_html = `<div id="${data[i].pvpoke_id}_toolbox" class="toolbox" style="display: none;"><div><div><div><div class="head"><div class="back"></div><div class="icon"><img class="icon" src="${image(i)}"></div><div class="title">${title}</div></div><div class="tags"></div><div class="body">`;
+        let kinds_html = `<div id="${data[i].pvpoke_id}_toolbox" class="toolbox" style="display: none;"><div><div><div class="head"><div class="back"></div><div class="icon"><img class="icon" src="${image(i)}"></div><div class="title">${title}</div></div><div class="tags"></div><div class="body">`;
 
         kinds_html += '<div class="section"><div class="section">';
         let genus = data[i].genus;
@@ -1313,7 +1313,7 @@ function prepare_content() {
         }
         kinds_html += '</div></div>';
 
-        kinds_html += '</div></div></div></div></div>';
+        kinds_html += '</div></div></div></div>';
         content.append(kinds_html);
     }
 }

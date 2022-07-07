@@ -134,7 +134,6 @@ label {
 .toolbox > div {
     display:table-cell;
     vertical-align:middle;
-    overflow-y: auto;
 }
 .toolbox > div > div {
     width: 100%;
@@ -143,12 +142,6 @@ label {
     box-sizing: border-box;
     margin-left: auto;
     margin-right: auto;
-    padding: 0;
-}
-.toolbox > div > div > div {
-    background-color: RGBA(255, 255, 255, 1);
-    /* border: 2px outset lightgray; */
-    /* border-radius: 1ex; */
     padding: 0;
 }
 .toolbox .head {
@@ -215,7 +208,8 @@ label {
     background-color: #ddd;
 }
 .toolbox .body {
-    overflow-y: auto;
+    background-color: RGBA(255, 255, 255, 1);
+	overflow-y: auto;
 }
 .toolbox .body .section {
     display: block;
