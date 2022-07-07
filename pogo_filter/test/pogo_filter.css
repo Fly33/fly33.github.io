@@ -1,11 +1,119 @@
-.unselectable {
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+.dioecious_container {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
 }
+.dioecious_container img {
+    width: 40px;
+    height: 40px;
+    margin: 0;
+    padding: 0;
+}
+.dioecious_container > input[type="radio"] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 40px;
+    height: 40px;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+}
+.dioecious_container > input[type="radio"]:first-child {
+    z-index: 10;
+}
+.dioecious_container > input[type="radio"]:first-child ~ input[type="radio"] {
+    z-index: 0;
+}
+.dioecious_container > input[type="radio"]:first-child:checked {
+    z-index: 0;
+}
+.dioecious_container > input[type="radio"]:first-child:checked + input[type="radio"] {
+    z-index: 10;
+}
+.dioecious_container > input[type="radio"]:first-child:checked + input[type="radio"] + input[type="radio"] + input[type="radio"] {
+    z-index: 10;
+    transition-property: z-index;
+    transition-delay: 500ms;
+}
+.dioecious_container > input[type="radio"]:first-child + input[type="radio"]:checked + input[type="radio"] {
+    z-index: 10;
+}
+.dioecious_container > input[type="radio"]:first-child + input[type="radio"]:checked + input[type="radio"] + input[type="radio"] {
+    z-index: 10;
+    transition-property: z-index;
+    transition-delay: 500ms;
+}
+.dioecious_container > input[type="radio"]:first-child + input[type="radio"] + input[type="radio"]:checked + input[type="radio"] {
+    z-index: 10;
+}
+.dioecious_container > input[type="radio"]:first-child:checked + input[type="radio"] + input[type="radio"] + input[type="radio"] ~ s::before {
+    position: absolute;
+    left: 0px;
+    top: -4px;
+    font-family: courier;
+    font-size: 13pt;
+    text-decoration: none;
+    color: green;
+    content: "✓";
+    text-shadow: 0px 0px 3px green;
+}
+.dioecious_container > input[type="radio"]:first-child + input[type="radio"]:checked + input[type="radio"] + input[type="radio"] ~ s::before {
+    position: absolute;
+    left: 0px;
+    top: -4px;
+    font-family: courier;
+    font-size: 20pt;
+    text-decoration: none;
+    color: blue;
+    content: "♂";
+    text-shadow: 0px 0px 3px blue;
+}
+.dioecious_container > input[type="radio"]:first-child + input[type="radio"] + input[type="radio"]:checked + input[type="radio"] ~ s::before {
+    position: absolute;
+    left: 0px;
+    top: -4px;
+    font-family: courier;
+    font-size: 20pt;
+    text-decoration: none;
+    color: red;
+    content: "♀";
+    text-shadow: 0px 0px 3px red;
+}
+.dioecious_container > input[type="radio"]:first-child + input[type="radio"] + input[type="radio"] + input[type="radio"] ~ u {
+    position: absolute;
+    left: 2px;
+    bottom: 0px;
+    font-family: calibri;
+    font-size: 10px;
+    font-style: normal;
+    font-weight: bold;
+    font-stretch: ultra-condensed;
+    text-shadow: 0px 1px 2px white, 0px -1px 2px white, 1px 0px 2px white, -1px 0px 2px white;
+    text-decoration: none;
+    color: black;
+}
+.dioecious_container > input[type="radio"]:first-child + input[type="radio"] + input[type="radio"] + input[type="radio"]:checked ~ u {
+    display: none;
+}
+.dioecious_container > input[type="radio"]:first-child:checked + input[type="radio"] + input[type="radio"] + input[type="radio"] ~ img {
+    //background-color: black;
+}
+.dioecious_container > input[type="radio"]:first-child + input[type="radio"]:checked + input[type="radio"] + input[type="radio"] ~ img {
+    //background-color: blue;
+}
+.dioecious_container > input[type="radio"]:first-child + input[type="radio"] + input[type="radio"]:checked + input[type="radio"] ~ img {
+    //background-color: red;
+}
+.dioecious_container > input[type="radio"]:first-child + input[type="radio"] + input[type="radio"] + input[type="radio"]:checked ~ img {
+    //background-color: white;
+    filter: grayscale(100%) opacity(50%);
+}
+
 .content {
     margin: 0;
     padding: 0;
@@ -74,6 +182,15 @@ body {
     top: 0;
     z-index: -1;
 }
+#language {
+    left: 0;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 3.5ex;
+    margin: 0;
+    box-sizing: border-box;
+}
 #menu {
     position: absolute;
     right: 0;
@@ -85,9 +202,22 @@ body {
     padding-top: 4px;
     margin: 0;
 }
-.settings {
-    padding: 5px;
-    font-family: calibri;
+#menu .sub {
+    display: none;
+    position: absolute;
+    width: 200px;
+    right : 0.5ex;
+    top: 3.5ex;
+    z-index: 100;
+    border: 1px outset lightgray;
+}
+#menu:hover .sub {
+    display: block;
+}
+#menu .item {
+    background-color: #eee;
+    width: auto;
+    height: auto;
 }
 label {
     font-family: calibri;
@@ -117,7 +247,43 @@ label {
     box-sizing: border-box;
 }
 #list > .select {
+    margin-right: 7ex;
     height: 100%;
+}
+#list > .select > .select {
+    margin: 2px;
+    margin-right: 3ex;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+#list .select input[type=text] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    border: 0;
+    padding: 0;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+#list .button {
+    position: absolute;
+    width: 7ex;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+#list .button input[type=button] {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 50%;
+    display: inline-block;
 }
 .toolbox {
     position: fixed;
@@ -136,87 +302,32 @@ label {
     vertical-align:middle;
 }
 .toolbox > div > div {
-    width: 100%;
+    width: 90%;
     max-width: 50ex;
-    max-height: var(--toolbox-max-height, 100vh);
     box-sizing: border-box;
     margin-left: auto;
     margin-right: auto;
+    background-color: RGBA(255, 255, 255, 1);
+    border: 2px outset lightgray;
+    border-radius: 1ex;
     padding: 0;
-    overflow-y: auto;
 }
-.toolbox .head {
+.toolbox .section {
+    margin: 1ex;
+}
+.toolbox .section .pokemon {
+    margin: 0;
+    margin-left: 40px;
+    width: auto;
+    height: 40px;
     position: relative;
 }
-.toolbox .head .back {
-    background-color: lightgray;
-    width: 48px;
+.toolbox .section .pokemon img {
+    width: 40px;
+    height: 40px;
     position: absolute;
-    left: 0;
+    left: -40px;
     top: 0;
-    bottom: 0;
-    font-family: calibri;
-    font-size: 27pt;
-    color: white;
-}
-.toolbox .head .back::before {
-	border: 2px solid white;
-    border-top: none;
-    border-right: none;
-	transform: rotate(45deg);
-	width: 36%;
-	height: 36%;
-	position: absolute;
-	left: 32%;
-	top: 32%;
-	content: "";
-}
-.toolbox .head .back::after {
-    border: 1px solid white;
-	border-right: none;
-    border-left: none;
-	width: 50%;
-	height: 0px;
-	position: absolute;
-	left: 25%;
-	top: 50%;
-	content: "";
-}
-.toolbox .head .icon {
-    background-color: #ddd;
-    width: 48px;
-    position: absolute;
-    right: 0px;
-    top: 0;
-    bottom: 0;
-}
-.toolbox .head .icon img {
-    width: 48px;
-    height: 48px;
-    margin: 0;
-    padding: 0;
-}
-.toolbox .head .title {
-    margin-left: 48px;
-    margin-right: 48px;
-    height: 48px;
-    font-size: 15pt;
-    box-sizing: border-box;
-    font-family: calibri;
-    overflow: hidden;
-    padding: 12px;
-    text-align: center;
-    background-color: #ddd;
-}
-.toolbox .body {
-    background-color: RGBA(255, 255, 255, 1);
-	overflow-y: auto;
-}
-.toolbox .body .section {
-    display: block;
-}
-.toolbox .body .section .section {
-    display: inline-block;
 }
 #section {
     position: relative;
@@ -257,160 +368,4 @@ label {
     padding: 0;
     padding-left: 2px;
     padding-right: 2px;
-}
-#selection_group > select {
-    width: 100%;
-    height: 3.5ex;
-}
-#selection_group > div.center {
-    position: relative;
-    margin-left: 7ex;
-    margin-right: 12ex;
-}
-#selection_group > div.left {
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 7ex;
-}
-#selection_group > div.right {
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    width: 12ex;
-}
-#selection_group select {
-    font-style: italic;
-}
-#selection_group option {
-    font-style: normal;
-}
-.pokemon {
-    position: relative;
-    display: inline-block;
-    width: 48px;
-    height: 48px;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    border: 2px solid white;
-    border-radius: 8px;
-}
-.pokemon img {
-    width: 48px;
-    height: 48px;
-    margin: 0;
-    padding: 0;
-    mix-blend-mode: multiply;
-}
-.pokemon.checked {
-    border-color: green;
-    background-color: #efe;
-}
-.pokemon.selected {
-    border-color: #408 !important;
-    background-color: #edf !important;
-}
-.pokemon.checked > s::before {
-    position: absolute;
-    left: 2px;
-    top: -4px;
-    font-family: courier;
-    font-size: 13pt;
-    text-decoration: none;
-    color: green;
-    content: "✓";
-    text-shadow: 0px 0px 3px green;
-}
-.pokemon > i {
-    position: absolute;
-    right: 2px;
-    top: -4px;
-    height: 30px;
-    text-decoration: none;
-}
-.pokemon > i::after {
-    font-family: courier;
-    font-size: 20pt;
-    text-decoration: none;
-    content: "";
-}
-.pokemon.male > i::after {
-    color: blue;
-    content: "♂";
-    text-shadow: 0px 0px 3px blue;
-}
-.pokemon.female > i::after {
-    color: red;
-    content: "♀";
-    text-shadow: 0px 0px 3px red;
-}
-.pokemon.shiny > i::before {
-    font-family: courier;
-    font-size: 9pt;
-    text-decoration: none;
-    /* color: yellow; */
-    content: "✨";
-    /* text-shadow: 0px 0px 3px yellow; */
-    position: relative;
-    top: -5px;
-    left: 3px;
-}
-
-.pokemon > u {
-    position: absolute;
-    left: 2px;
-    bottom: 0px;
-    font-family: calibri;
-    font-size: 10px;
-    font-style: normal;
-    font-weight: bold;
-    font-stretch: ultra-condensed;
-    text-shadow: 0px 1px 2px white, 0px -1px 2px white, 1px 0px 2px white, -1px 0px 2px white;
-    text-decoration: none;
-    color: black;
-    display: none;
-}
-.pokemon.checked > u {
-    display: inherit;
-}
-div.tags {
-    background-color: #eee;
-}
-div.tags .tag {
-    border: 3px solid #ddd;
-    border-radius: 12px;
-    background-color: #fff;
-    color: #000;
-    font-family: calibri;
-    font-size: 12pt;
-    font-weight: bold;
-    padding-left: 5px;
-    padding-right: 5px;
-    margin: 5px;
-    display: inline-block;
-}
-div.tags .tag:hover {
-    background-color: #ddd;
-    color: #000;
-}
-div.tags .tag.partial {
-    border: 3px dashed #444;
-    background-color: #444;
-    color: #fff;
-}
-div.tags .tag.partial:hover {
-    background-color: #888;
-    color: #fff;
-}
-div.tags .tag.full {
-    border: 2px solid #444;
-    background-color: #444;
-    color: #fff;
-}
-div.tags .tag.full:hover {
-    background-color: #888;
-    color: #fff;
 }
