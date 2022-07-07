@@ -143,6 +143,7 @@ label {
     margin-left: auto;
     margin-right: auto;
     padding: 0;
+    overflow-y: auto;
 }
 .toolbox .head {
     position: relative;
