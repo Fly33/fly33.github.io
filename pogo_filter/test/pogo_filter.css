@@ -219,6 +219,25 @@ label {
 .toolbox .body .section .section {
     display: inline-block;
 }
+.toolbox .hr {
+    position: relative;
+    text-align: center;
+}
+.toolbox .hr span {
+    font-family: verdana;
+    font-size: 10pt;
+    font-weight: bold;
+    background: #fff;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.toolbox .hr hr {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    z-index: -1;
+}
 #section {
     position: relative;
     height: 3.5ex;
