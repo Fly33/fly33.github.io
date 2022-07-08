@@ -211,7 +211,7 @@ function load_list() {
             let id = data[i].genus[j].id;
             $(`#${id}`).removeClass('checked');
             let pvpoke_id = data[i].pvpoke_id + (data[i].genus[j].kind.shiny ? '_shiny' : '');
-            if (!species[id] && species[pvpoke_id] && (species[pvpoke_id].gender & (data[i].genus[j].male * 2 + data[i].genus[j].female || 3))) {
+            if (!species[id] && species[pvpoke_id] && (species[pvpoke_id].gender & (data[i].genus[j].male * 2 + data[i].genus[j].female || 3)) && !data[i].genus[j].kind.costume) {
                 //console.log(species[pvpoke_id]);
                 species[id] = {checked: 1, tags: []};
                 if (species[pvpoke_id].section) {
