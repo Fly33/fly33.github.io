@@ -3,78 +3,78 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="referrer" content="no-referrer"/>
     <script type="text/javascript" src='https://code.jquery.com/jquery-3.2.1.min.js'></script>
     <link rel="stylesheet" href="pogo_filter.css" />
     <script type="text/javascript" src="pogo_filter.js"></script>
 </head>
-<body align="center">
+<body class="unselectable" align="center">
     <div class="header">
         <div class="section">
             <div id="menu">
                 ⋮
-                <div class="sub">
-                    <div class="item">
-                        <select id="language">
-                        </select>
-                    </div>
-                    <div class="item">
-                        <input id="compact" type="checkbox" /><label for="compact">Compact</label>
-                    </div>
-                    <div class="item">
-                        <input id="special" type="checkbox" /><label for="special">Special</label>
-                    </div>
-                </div>
             </div>
             <div id="list">
                 <div class="select">
                     <select size="1">
                     </select>
-                    <div class="select">
-                        <input type="text" value="" placeholder="List name"/>
-                    </div>
-                </div>
-                <div class="button">
-                    <input type="button" value="➕"
-                    /><input type="button" value="➖"/>
                 </div>
             </div>
         </div>
         <div class="section">
             <textarea placeholder="Your pokemon filter appeares here. Select some pokemons below. Also you can paste existing filter here."></textarea>
         </div>
+        <!--div class="section" id="selection_group">
+            <div class="left">
+                <input type="button" value="V"
+                /><input type="button" value="X"/>
+            </div>
+            <div class="center">
+                <select size="1">
+                    <option disabled selected>Move to group:</option>
+                </select>
+            </div>
+            <div class="right">
+                <input id="selection_mode" type="checkbox"/><label for="selection_mode">Selection</label>
+            </div>
+        </div-->
         <div class="section">
             <input id="filter" type="search" placeholder="Quick filter" />
         </div>
     </div>
+    <div id="settings_toolbox" class="toolbox" style="display: none;"><div><div>
+        <div class="head"><div class="back"></div><div class="icon"></div><div class="title">Settings</div></div>
+        <div class="body">
+            <div class="settings">
+                <span>Language:</span>
+                <span>
+                    <select id="language">
+                    </select>
+                </span>
+            </div>
+            <div class="settings">
+                <input id="compact" type="checkbox" /><label for="compact">Compact</label>
+            </div>
+            <div class="settings">
+                <span><button id="new_list_button">🔆 new filter</button>&nbsp;<button id="edit_list_button">✏️ edit filter</button>&nbsp;<button id="delete_list_button">❌ delete filter</button></span>
+            </div>
+            <div class="settings">
+                <span><button onclick="javascript:reset()">⚠️ reset data</button></span>
+            </div>
+            <div class="settings">
+                <span>💸 Donate via:</span>
+                <span><a href="https://paypal.me/fly359">PayPal</a>, <a href="https://patreon.com/pogo_filter">Patreon</a></span>
+            </div>
+        </div>
+    </div></div></div>
     <div class="content">
     </div>
     <div class="footer">
         Pokemon Go filter constructor © <a href="https://www.reddit.com/user/Fly_33/">Fly33</a>,
         discuss on <a href="https://www.reddit.com/user/Fly_33/draft/558fc91e-4d5d-11eb-9b4f-b62aae688550">reddit</a>,
-        <a href="paypal.me/fly359">Donate</a>,
+        donate via <a href="https://paypal.me/fly359">PayPal</a>, <a href="https://patreon.com/pogo_filter">Patreon</a>,
         released under the <a href="https://opensource.org/licenses/MIT">MIT license</a>,
-        icons by <a href="https://serebii.net/">Serebii</a>,
-        <a href="javascript:reset()" title="reset">🚑</a>
-    </div>
-    <div class="toolbox" style="display: none;">
-        <div>
-            <div>
-                <div class="section">
-                    <div class="pokemon">
-                        <img src="https://www.serebii.net/pokemongo/pokemon/001.png"/>
-                    </div>
-                </div>
-                <div class="section">
-                    <div id="section">
-                        <select size="1">
-                        </select>
-                        <div>
-                            <input type="text" value="" placeholder="Section" name="section" title="Section"/>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        icons by <a href="https://serebii.net/">Serebii</a>, <a href="https://pokemongo.fandom.com/wiki/">Fandom</a><!--a href="https://bulbapedia.bulbagarden.net/wiki/">Bulbapedia</a-->
     </div>
     <!--
             TODO:
@@ -91,7 +91,7 @@
                 +13. Ссылка на донат.
                 -15. Отложенное? сохранение под одним ключём?
                 +16. Выбор локализации (локализации в виде .json файлов)
-                +17. Сообщение о возможности смены локализации в выдаче.
+                -17. Сообщение о возможности смены локализации в выдаче.
                 +18. рефакторинг названий
                 +19. Переделать данные в json
                 +20. Сделать вывод секций в порядке сортировки
@@ -99,32 +99,41 @@
                 +23. Быстрый фильтр по правилам пого
                 +28. Починить правильное отображение формы и парсинг
                 +30. Убрать отображение группы для невыделенных элементов.
+                +31. Универсальный парсер
+                +32. Компактный режим
+                +39. Оценщик локали тормозной какой-то
+                +34. Подтверждение удаления списка
+                +36. Документация
+                +38. Смена локали не обновляет быстрый фильтр
+                -21. Прикрутить +Пок и evolve (Эволм хреновая затея)
+                +-24. Оптимизация загрузки. Не обновлять фильтры, если они не меняются. Предгенерация функций обновления?
+                -26. Сделать индикатор загрузки (с прогресс баром?) (гифка во время работы яваскрипта)
+                +1. Бесполые легенды
+                +12. Костюмы пикачу и прочих монстров (во вспомогательном окне?)
+                +22. Теги вместо групп.
+                +11.3 Картинки из бульбапедии? https://bulbapedia.bulbagarden.net/wiki/List_of_Pok%C3%A9mon_by_base_stats_(GO)
+                +27. Переделать интерфейс
+                +27.1 Картинки всегда цветные
+                +27.2 Выбор по клику
+                +27.3.1 По двойному клику вызов дополнительного окна
+                -27.3.2 По правому клику начало выделения (или наоборот)
+                -35. Компактный режим глобальный?
+                -37. Разные деревья для обычного списка и специального
+                +37.2 Автоматическое определение спешл или нет.
+                -38. Переделать язык в сабменю с радиогруппой.
+                -38.1 Закрывать меню по клику.
 
-                1. Бесполые легенды
                 8. Ссылка на тему на реддите
-                12. Костюмы пикачу и прочих монстров (во вспомогательном окне?)
                 14. Всплывающие подсказки для новичков
-                21. Прикрутить +Пок и evolve (Эволм хреновая затея)
-                22. Теги вместо групп.
-                24. Оптимизация загрузки. Не обновлять фильтры, если они не меняются. Предгенерация функций обновления?
-                25. Остальные локализации (https://pokemongo.fandom.com/wiki/Pok%C3%A9mon_search)
-                26. Сделать индикатор загрузки (с прогресс баром?) (гифка во время работы яваскрипта)
-                
-                11.3 Картинки из бульбапедии? https://bulbapedia.bulbagarden.net/wiki/List_of_Pok%C3%A9mon_by_base_stats_(GO)
-                27. Переделать интерфейс
-                27.1 Картинки всегда цветные
-                27.2 Выбор по клику
-                27.3 По двойному клику (или по кнопке) переход в режим выделения
+                25. Остальные локализации (https://pokemongo.fandom.com/wiki/Pok%C3%A9mon_search (К чему эта ссылка??))
                 27.4 Бар с кнопками для обработки выделенного. (выбрать/убрать, кинуть в группу, убрать выделение/включить режим выделения, выделить всё)
                 29. Локализация для подсказок (title) для покемонов и не только. И смена локализации.
-                
-                +31. Универсальный парсер
-                32. Компактный режим
-                
                 33. Включение/выключение некоторых групп
-                34. Подтверждение удаления списка
-                35. Компактный режим глобальный?
-                36. Документация
+                39. Парсер дополняет список, а не заменяет.
+                40. Кнопка инвертирования
+                41. Выбор режима костюмов (без, только эволв, все, ещё какой-то)
+                42. undo?
+                
                 
             chrome --allow-file-access-from-files file:///C:/Users/Fly/Work/PoGoFilter/pogo_filter.html
         
