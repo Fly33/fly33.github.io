@@ -442,7 +442,7 @@ function generate_compact(l10n) {
     for (let i = 0; i < data.length; ++i) {
         for (let j = 0; j < data[i].genus.length; ++j) {
             let {checked} = species[data[i].genus[j].id] || default_specy();
-            if (checked === 0)
+            if (!checked)
                 continue;
             if (last && last+1 >= data[i].dex)
                 last = +data[i].dex;
