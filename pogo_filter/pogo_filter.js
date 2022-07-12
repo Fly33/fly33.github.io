@@ -119,7 +119,7 @@ function prepare_structures() {
     for (let i = 0; i < data.length; ++i) {
         // Имя пока, фильтр 1, фильтр 2, шайни, костюмы, пол
         for (let j = 0; j < data[i].genus.length; ++j) {
-            add_item(groups, data[i].name, data[i].filter1, data[i].filter2, data[i].genus[j].kind.shiny ? "shiny" : "", data[i].genus[j].kind.costume ? "costume" : "", data[i].genus[j].gender);
+            add_item(groups, data[i].dex, data[i].filter1, data[i].filter2, data[i].genus[j].kind.shiny ? "shiny" : "", data[i].genus[j].kind.costume ? "costume" : "", data[i].genus[j].gender);
         }
     }
     sections = new Map();
@@ -241,19 +241,19 @@ function load_list() {
     onfilter();
 }
 
-function generate_filter(pokemon_name) {
+function generate_filter(dex) {
     function gen_term(key, keys) {
         if (key !== "")
-            return l10n => ',!' + l10n.filters[key];
+            return (...l10ns) => l10ns.map((l10n) => ',!' + l10n.filters[key]);
         keys = Array.from(chain(keys, filter(x => x), map(x => x.toLowerCase())));
-        return l10n => chain(keys, map(key => ',' + l10n.filters[key]), join(''));
+        return (...l10ns) => [chain(l10ns, map((l10n) => chain(keys, map(key => ',' + l10n.filters[key]), join(''))), join(''))];
     }
     
     function gen(node) {
         if (!node.sub)
-            return function*(_l10n) {
+            return function*(..._l10ns) {
                 if (!node.value)
-                    yield "";
+                    yield [""];
             };
         let items = Array.from(chain(object_keys(node.sub), map(key => [key.toLowerCase(), node.sub[key]]), map(([key, value]) => ({key: key, term_gen: gen_term(key, object_keys(node.sub)), sub_gen: gen(value)}))));
         if (items.length === 1)
@@ -261,27 +261,36 @@ function generate_filter(pokemon_name) {
         let is_shiny = !!node.sub["shiny"];
         let is_costume = !!node.sub["costume"];
         let index = items[0].key === "" ? 0 : 1;
-        return function*(l10n) {
+        return function*(...l10ns) {
             if (!node.value)
-                yield "";
+                yield [""];
             else if (!shiny && is_shiny)
-                yield* items[index].sub_gen(l10n);
+                yield* items[index].sub_gen(...l10ns);
             else if (!costume && is_costume)
-                yield* items[index].sub_gen(l10n);
+                yield* items[index].sub_gen(...l10ns);
             else {
-                for (let {_key, term_gen, sub_gen} of items) {
-                    let term = term_gen(l10n);
-                    for (let tail of sub_gen(l10n)) {
-                        yield term + tail;
+                for (let {term_gen, sub_gen} of items) {
+                    let term = term_gen(...l10ns);
+                    for (let tail of sub_gen(...l10ns)) {
+                        if (term.length === 1)
+                            if (tail.length === 1)
+                                yield [term[0] + tail[0]];
+                            else
+                                yield tail.map((tail) => term[0] + tail);
+                        else
+                            if (tail.length === 1)
+                                yield term.map((term) => term + tail[0]);
+                            else
+                                yield term.map((term, i) => term + tail[i]);
                     }
                 }
             }
         };
     }
     
-    let node = groups[pokemon_name];
+    let node = groups[dex];
     let filter_gen = gen(node);
-    return (l10n) => chain(filter_gen(l10n), filter(x => x), map(filter => '&!' + l10n.names[pokemon_name.toLowerCase()] + filter));
+    return (...l10ns) => chain(filter_gen(...l10ns), integrate(), filter(x => x), map(filter => '&!' + dex.toString() + filter));
 }
 
 function add_to_section(poke, section) {
@@ -310,7 +319,7 @@ function check_pokemon(poke) {
         ++costume;
     species[poke.id].checked = true;
     $(`#${poke.id}`).addClass('checked');
-    update_node(groups[poke.data.name], poke.data.filter1, poke.data.filter2, poke.kind.shiny ? "shiny" : "", poke.kind.costume ? "costume" : "", poke.gender, 1);
+    update_node(groups[poke.data.dex], poke.data.filter1, poke.data.filter2, poke.kind.shiny ? "shiny" : "", poke.kind.costume ? "costume" : "", poke.gender, 1);
     if (species[poke.id].tags.length) {
         for (let tag of species[poke.id].tags) {
             add_to_section(poke, tag);
@@ -333,7 +342,7 @@ function uncheck_pokemon(poke) {
         --costume;
     species[poke.id].checked = false;
     $(`#${poke.id}`).removeClass('checked');
-    update_node(groups[poke.data.name], poke.data.filter1, poke.data.filter2, poke.kind.shiny ? "shiny" : "", poke.kind.costume ? "costume" : "", poke.gender, -1);
+    update_node(groups[poke.data.dex], poke.data.filter1, poke.data.filter2, poke.kind.shiny ? "shiny" : "", poke.kind.costume ? "costume" : "", poke.gender, -1);
     if (species[poke.id].tags.length) {
         for (let tag of species[poke.id].tags) {
             remove_from_section(poke, tag);
@@ -466,7 +475,7 @@ function generate_compact(l10n) {
         result += `${first}`;
 
     function footer(l10n) {
-        let result = chain(object_keys(filters), filter(key => groups[key].value), map(key => filters[key](l10n)), integrate(), join(''));
+        let result = "";
         if (!shiny)
             result += '&!' + l10n.filters['shiny'];
         if (!shiny) // && !legendary
@@ -476,10 +485,14 @@ function generate_compact(l10n) {
         result += '&!' + l10n.filters['shadow'] + '&!' + l10n.filters['traded'];
         return result;
     }
-    result += footer(l10n);
     let l10n_en = l10n_by_id['en'].data;
-    if (l10n !== l10n_en)
+    if (l10n !== l10n_en) {
+        result += chain(object_keys(filters), filter(key => groups[key].value), map(key => filters[key](l10n_en, l10n)), integrate(), join('')); 
         result += footer(l10n_en);
+    } else {
+        result += chain(object_keys(filters), filter(key => groups[key].value), map(key => filters[key](l10n)), integrate(), join(''));
+    }
+    result += footer(l10n);
     result += '&!4*;' + l10n.phrases.postscript;
     return result;
 }
