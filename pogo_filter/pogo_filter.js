@@ -97,6 +97,9 @@ function lower_bound(arr, v) {
     // return result;
 // }
 
+function escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
 var data;
 var pokemon;
 var l10n, l10n_by_id;
@@ -834,20 +837,20 @@ function make_checker(tree, l10n) {
         };
     }
     
-    let undefined_re = RegExp(`^(?:@[\\w -]+|\\d\\*|${l10n.filters["mythical"]}|${l10n.filters["legendary"]}|${l10n.filters["shiny"]}|${l10n.filters['genderunknown']}|${l10n.filters['female']}|${l10n.filters['male']}|${l10n.filters["costume"]}|${l10n.filters["eggsonly"]}|${l10n.filters["item"]}|${l10n.filters["megaevolve"]}|${l10n.filters["evolve"]}|${l10n.filters["tradeevolve"]}|${l10n.filters["evolvenew"]}|${l10n.filters['lucky']}|${l10n.filters['shadow']}|${l10n.filters['purified']}|${l10n.filters['defender']}|${l10n.filters['hp']}\\s*\\d*-?\\d*|${l10n.filters['cp']}\\s*\\d*-?\\d*|${l10n.filters['year']}\\s*\\d*-?\\d*|${l10n.filters['age']}\\s*\\d*-?\\d*|${l10n.filters['distance']}\\s*\\d*-?\\d*|${l10n.filters['buddy']}\\s*\\d*-?\\d*|${l10n.filters['traded']}|${l10n.filters['hatched']}|${l10n.filters['research']}|${l10n.filters['raid']}|${l10n.filters['remoteraid']}|${l10n.filters['exraid']}|${l10n.filters['megaraid']}|${l10n.filters['rocket']}|${l10n.filters['gbl']}|${l10n.filters['snapshot']}|${l10n.filters['candyxl']})$`, "i");
+    let undefined_re = RegExp(`^(?:@[\\w -]+|\\d\\*|${escapeRegExp(l10n.filters['lucky'])}|${escapeRegExp(l10n.filters['shadow'])}|${escapeRegExp(l10n.filters['purified'])}|${escapeRegExp(l10n.filters['defender'])}|${escapeRegExp(l10n.filters['hp'])}\\s*\\d*-?\\d*|${escapeRegExp(l10n.filters['cp'])}\\s*\\d*-?\\d*|${escapeRegExp(l10n.filters['year'])}\\s*\\d*-?\\d*|${escapeRegExp(l10n.filters['age'])}\\s*\\d*-?\\d*|${escapeRegExp(l10n.filters['distance'])}\\s*\\d*-?\\d*|${escapeRegExp(l10n.filters['buddy'])}\\s*\\d*-?\\d*|${escapeRegExp(l10n.filters['traded'])}|${escapeRegExp(l10n.filters['hatched'])}|${escapeRegExp(l10n.filters['research'])}|${escapeRegExp(l10n.filters['raid'])}|${escapeRegExp(l10n.filters['remoteraid'])}|${escapeRegExp(l10n.filters['exraid'])}|${escapeRegExp(l10n.filters['megaraid'])}|${escapeRegExp(l10n.filters['rocket'])}|${escapeRegExp(l10n.filters['gbl'])}|${escapeRegExp(l10n.filters['snapshot'])}|${escapeRegExp(l10n.filters['candyxl'])})$`, "i");
     let dex_re = /^(?:(\d+)|(\d*)-(\d*))$/;
-    let evolve_re = RegExp(`^(?:${l10n.filters["evolve"]}|${l10n.filters["tradeevolve"]}|${l10n.filters["evolvenew"]})$`, "i");
-    let megaevolve_re = RegExp(`^${l10n.filters["megaevolve"]}$`, "i");
-    let item_re = RegExp(`^${l10n.filters["item"]}$`, "i");
-    let eggsonly_re = RegExp(`^${l10n.filters["eggsonly"]}$`, "i");
-    let costume_re = RegExp(`^${l10n.filters["costume"]}$`, "i");
-    let male_re = RegExp(`^${l10n.filters['male']}$`, "i");
-    let female_re = RegExp(`^${l10n.filters['female']}$`, "i");
-    let genderunknown_re = RegExp(`^${l10n.filters['genderunknown']}$`, "i");
-    let shiny_re = RegExp(`^${l10n.filters["shiny"]}$`, "i");
-    let legendary_re = RegExp(`^${l10n.filters["legendary"]}$`, "i");
-    let ultrabeasts_re = RegExp(`^${l10n.filters["ultrabeasts"]}$`, "i");
-    let mythical_re = RegExp(`^${l10n.filters["mythical"]}$`, "i");
+    let evolve_re = RegExp(`^(?:${escapeRegExp(l10n.filters["evolve"])}|${escapeRegExp(l10n.filters["tradeevolve"])}|${escapeRegExp(l10n.filters["evolvenew"])})$`, "i");
+    let megaevolve_re = RegExp(`^${escapeRegExp(l10n.filters["megaevolve"])}$`, "i");
+    let item_re = RegExp(`^${escapeRegExp(l10n.filters["item"])}$`, "i");
+    let eggsonly_re = RegExp(`^${escapeRegExp(l10n.filters["eggsonly"])}$`, "i");
+    let costume_re = RegExp(`^${escapeRegExp(l10n.filters["costume"])}$`, "i");
+    let male_re = RegExp(`^${escapeRegExp(l10n.filters['male'])}$`, "i");
+    let female_re = RegExp(`^${escapeRegExp(l10n.filters['female'])}$`, "i");
+    let genderunknown_re = RegExp(`^${escapeRegExp(l10n.filters['genderunknown'])}$`, "i");
+    let shiny_re = RegExp(`^${escapeRegExp(l10n.filters["shiny"])}$`, "i");
+    let legendary_re = RegExp(`^${escapeRegExp(l10n.filters["legendary"])}$`, "i");
+    let ultrabeasts_re = RegExp(`^${escapeRegExp(l10n.filters["ultrabeasts"])}$`, "i");
+    let mythical_re = RegExp(`^${escapeRegExp(l10n.filters["mythical"])}$`, "i");
     
     function keyword(str) {
         if (str === "")
