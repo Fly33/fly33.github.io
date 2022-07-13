@@ -15,6 +15,46 @@
         "filename": "german.json"
     },
     {
+        "id": "it",
+        "name": "italian",
+        "filename": "italian.json"
+    },
+    {
+        "id": "es",
+        "name": "spanish",
+        "filename": "spanish.json"
+    },
+    {
+        "id": "pt",
+        "name": "portuguese",
+        "filename": "portuguese.json"
+    },
+    {
+        "id": "tr",
+        "name": "turkish",
+        "filename": "turkish.json"
+    },
+    {
+        "id": "zh",
+        "name": "chinese",
+        "filename": "chinese.json"
+    },
+    {
+        "id": "ja",
+        "name": "japanese",
+        "filename": "japanese.json"
+    },
+    {
+        "id": "ko",
+        "name": "korean",
+        "filename": "korean.json"
+    },
+    {
+        "id": "th",
+        "name": "thai",
+        "filename": "thai.json"
+    },
+    {
         "id": "ru",
         "name": "russian",
         "filename": "russian.json"
