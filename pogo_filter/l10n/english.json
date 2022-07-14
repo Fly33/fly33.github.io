@@ -1099,11 +1099,21 @@
     },
     "Phrases": {
         "Caption": "My wishlist (copy whole and paste as is):",
-        "Caption2": "Addition filters (do not cut off):",
+        "Caption2": "Additional filters (do not cut off):",
         "Postscript": "Create your own filter on fly33.github.io/pogo_filter/"
     },
     "UI": {
-        "Filter": "Quick filter",
-        "Special": "Special Trades"
+        "Filter placeholder": "Quick filter",
+        "Textarea placeholder": "Your pokémon filter appears here. Select some pokémon below. Also you can paste any existing filters here.",
+        "Settings toolbox title": "Settings",
+        "Settings toolbox interface language title": "Interface language:",
+        "Settings toolbox filter language label": "Filter language:",
+        "Settings toolbox trade label": "For trades",
+        "Settings toolbox compact label": "Compact",
+        "Settings toolbox new filter title": "new filter",
+        "Settings toolbox edit filter title": "edit filter",
+        "Settings toolbox delete filter title": "delete filter",
+        "Settings toolbox reset data title": "reset data",
+        "Settings toolbox donate label": "Donate via:"
     }
 }

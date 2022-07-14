@@ -1103,6 +1103,17 @@
         "Postscript": "Crea tu propio filtro en fly33.github.io/pogo_filter/"
     },
     "UI": {
-        "Filter": "Filtro rápido"
+        "Filter placeholder": "Filtro rápido",
+        "Textarea placeholder": "Tu filtro de pokémon aparece aquí. Selecciona algunos pokémon a continuación. También puede pegar cualquier filtro existente aquí.",
+        "Settings toolbox title": "Ajustes",
+        "Settings toolbox interface language title": "Lenguaje de interfaz:",
+        "Settings toolbox filter language label": "Idioma del filtro:",
+        "Settings toolbox trade label": "para intercambios",
+        "Settings toolbox compact label": "Compacto",
+        "Settings toolbox new filter title": "filtro nuevo",
+        "Settings toolbox edit filter title": "editar filtro",
+        "Settings toolbox delete filter title": "eliminar filtro",
+        "Settings toolbox reset data title": "reiniciar datos",
+        "Settings toolbox donate label": "Donar a través de:"
     }
 }

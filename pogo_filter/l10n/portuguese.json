@@ -1099,10 +1099,21 @@
     },
     "Phrases": {
         "Caption": "Minha lista de desejos (copie inteira e cole como está):",
-        "Caption2": "Filtros de adição (não corte):",
+        "Caption2": "Filtros adicionais (não corte):",
         "Postscript": "Crie seu próprio filtro em fly33.github.io/pogo_filter/"
     },
     "UI": {
-        "Filter": "Filtro rápido"
+        "Filter placeholder": "Filtro rápido",
+        "Textarea placeholder": "Seu filtro pokemon aparece aqui. Selecione alguns pokémons abaixo. Além disso, você pode colar quaisquer filtros existentes aqui.",
+        "Settings toolbox title": "Definições",
+        "Settings toolbox interface language title": "Idioma da interface:",
+        "Settings toolbox filter language label": "Idioma do filtro:",
+        "Settings toolbox trade label": "Para trocas",
+        "Settings toolbox compact label": "Compactar",
+        "Settings toolbox new filter title": "novo filtro",
+        "Settings toolbox edit filter title": "editar filtro",
+        "Settings toolbox delete filter title": "excluir filtro",
+        "Settings toolbox reset data title": "Redefinir dados",
+        "Settings toolbox donate label": "Doe através de:"
     }
 }

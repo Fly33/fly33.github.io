@@ -1103,7 +1103,17 @@
         "Postscript": "Создайте свой фильтр на fly33.github.io/pogo_filter/"
     },
     "UI": {
-        "Filter": "Быстрый фильтр",
-        "Special": "Специальный обмен"
+        "Filter placeholder": "Быстрый фильтр",
+        "Textarea placeholder": "Здесь появится ваш фильтр покемонов. Выберите несколько покемонов ниже. Также вы можете вставить сюда любые существующие фильтры.",
+        "Settings toolbox title": "Настройки",
+        "Settings toolbox interface language title": "Язык интерфейса:",
+        "Settings toolbox filter language label": "Язык фильтра:",
+        "Settings toolbox trade label": "Для обменов",
+        "Settings toolbox compact label": "Компактный",
+        "Settings toolbox new filter title": "новый фильтр",
+        "Settings toolbox edit filter title": "изменить фильтр",
+        "Settings toolbox delete filter title": "удалить фильтр",
+        "Settings toolbox reset data title": "сбросить данные",
+        "Settings toolbox donate label": "Пожертвовать через:"
     }
 }

@@ -1019,15 +1019,15 @@
         "White Flower": "Weißblütler",
         "Yellow Flower": "Gelbblütler",
         "Natural Form": "Zottelform",
-        "Dandy Trim": "Kavaliers-schnitt",
-        "Debutante Trim": "Fräulein-schnitt",
-        "Diamond Trim": "Diamanten-schnitt",
-        "Heart Trim": "Herzchen-schnitt",
-        "Kabuki Trim": "Kabuki-Schnitt",
-        "La Reine Trim": "Königinnen-schnitt",
-        "Matron Trim": "Damen-schnitt",
-        "Pharaoh Trim": "Herrscher-schnitt",
-        "Star Trim": "Sternchen-schnitt"
+        "Dandy Trim": "Kavaliersschnitt",
+        "Debutante Trim": "Fräuleinschnitt",
+        "Diamond Trim": "Diamantenschnitt",
+        "Heart Trim": "Herzchenschnitt",
+        "Kabuki Trim": "Kabukischnitt",
+        "La Reine Trim": "Königinnenschnitt",
+        "Matron Trim": "Damenschnitt",
+        "Pharaoh Trim": "Herrscherschnitt",
+        "Star Trim": "Sternchenschnitt"
     },
     "Filters": {
         "Normal": "Normal",
@@ -1098,12 +1098,22 @@
         "XXL": "XXL"
     },
     "Phrases": {
-        "Caption": "Meine wunschliste (ganz kopieren und so wie sie ist einfügen):",
-        "Caption2": "Zusatzfilter (nicht abschneiden):",
+        "Caption": "Meine Wunschliste (ganz kopieren und einfügen wie sie ist):",
+        "Caption2": "Zusätzliche Filter (nicht abschneiden):",
         "Postscript": "Erstellen Sie Ihren eigenen Filter auf fly33.github.io/pogo_filter/"
     },
     "UI": {
-        "Filter": "Schnellfilter",
-        "Special": "Spezial-Tausch"
+        "Filter placeholder": "Schnellfilter",
+        "Textarea placeholder": "Ihr Pokemon-Filter erscheint hier. Wählen Sie unten ein Pokémon aus. Sie können hier auch alle vorhandenen Filter einfügen.",
+        "Settings toolbox title": "Einstellungen",
+        "Settings toolbox interface language title": "Schnittstellensprache:",
+        "Settings toolbox filter language label": "Filtersprache:",
+        "Settings toolbox trade label": "Für Geschäfte",
+        "Settings toolbox compact label": "Kompakt",
+        "Settings toolbox new filter title": "neuer Filter",
+        "Settings toolbox edit filter title": "Filter bearbeiten",
+        "Settings toolbox delete filter title": "Filter löschen",
+        "Settings toolbox reset data title": "Daten zurücksetzen",
+        "Settings toolbox donate label": "Spenden Sie über:"
     }
 }

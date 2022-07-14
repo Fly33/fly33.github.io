@@ -936,13 +936,13 @@
         "!": "!",
         "?": "?",
         "Normal Form": "Forme Normale",
-        "Sunny Form": "Sunny Form",
-        "Rainy Form": "Rainy Form",
-        "Snowy Form": "Snowy Form",
+        "Sunny Form": "Forme Solaire",
+        "Rainy Form": "Forme Eau de Pluie",
+        "Snowy Form": "Forme Blizzard",
         "Normal Forme": "Forme Normale",
-        "Attack Forme": "Attack Forme",
-        "Defense Forme": "Defense Forme",
-        "Speed Forme": "Speed Forme",
+        "Attack Forme": "Forme Attaque",
+        "Defense Forme": "Forme Défense",
+        "Speed Forme": "Forme Vitesse",
         "Plant Cloak": "Cape Plante",
         "Sandy Cloak": "Cape Sable",
         "Trash Cloak": "Cape Déchet",
@@ -1099,11 +1099,21 @@
     },
     "Phrases": {
         "Caption": "Ma liste de souhaits (copier en entier et coller tel quel):",
-        "Caption2": "Filtres d'addition (ne pas couper):",
+        "Caption2": "Filtres supplémentaires (ne pas couper) :",
         "Postscript": "Créez votre propre filtre sur fly33.github.io/pogo_filter/"
     },
     "UI": {
-        "Filter": "Filtre rapide",
-        "Special": "Échanges spéciaux"
+        "Filter placeholder": "Filtre rapide",
+        "Textarea placeholder": "Votre filtre pokémon apparaît ici. Sélectionnez quelques pokémon ci-dessous. Vous pouvez également coller ici tous les filtres existants.",
+        "Settings toolbox title": "Réglages",
+        "Settings toolbox interface language title": "Langue de l'interface:",
+        "Settings toolbox filter language label": "Langue du filtre:",
+        "Settings toolbox trade label": "Pour les échanges",
+        "Settings toolbox compact label": "Compact",
+        "Settings toolbox new filter title": "nouveau filtre",
+        "Settings toolbox edit filter title": "modifier le filtre",
+        "Settings toolbox delete filter title": "supprimer le filtre",
+        "Settings toolbox reset data title": "Réinitialiser les données",
+        "Settings toolbox donate label": "Faire un don via:"
     }
 }

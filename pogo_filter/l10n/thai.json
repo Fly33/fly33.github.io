@@ -1019,8 +1019,8 @@
         "White Flower": "ดอกไมขาว",
         "Yellow Flower": "ดอกไมเหลือง",
         "Natural Form": "รางธรรมชาติ",
-        "Dandy Trim": "ทรงสุ� าพบุรุษ",
-        "Debutante Trim": "ทรงสุ� าพสตรี",
+        "Dandy Trim": "ทรงสุภาพบุรุษ",
+        "Debutante Trim": "ทรงสุภาพสตรี",
         "Diamond Trim": "ทรงขาวหลามตัด",
         "Heart Trim": "ทรงหัวใจ",
         "Kabuki Trim": "ทรงคะบุกิ",
@@ -1087,7 +1087,7 @@
         "Rocket": "ร็อกเกต",
         "Shadow": "ชาโดว",
         "Shiny": "สีแตกตาง",
-        "Snapshot": "ถาย� าพ",
+        "Snapshot": "ถายภาพ",
         "Traded": "แลกเปลี่ยน",
         "TradeEvolve": "แลกเปลี่ยนกลายราง",
         "UltraBeasts": "อัลตราบีสต",
@@ -1103,6 +1103,17 @@
         "Postscript": "สร้างตัวกรองของคุณเองบน fly33.github.io/pogo_filter/"
     },
     "UI": {
-        "Filter": "ตัวกรองด่วน"
+        "Filter placeholder": "ตัวกรองด่วน",
+        "Textarea placeholder": "ตัวกรองโปเกมอนของคุณจะปรากฏขึ้นที่นี่ เลือกโปเกมอนด้านล่าง นอกจากนี้ คุณยังสามารถวางตัวกรองที่มีอยู่ได้ที่นี่",
+        "Settings toolbox title": "การตั้งค่า",
+        "Settings toolbox interface language title": "ภาษาอินเทอร์เฟซ:",
+        "Settings toolbox filter language label": "ภาษาของตัวกรอง:",
+        "Settings toolbox trade label": "เพื่อการค้า",
+        "Settings toolbox compact label": "กะทัดรัด",
+        "Settings toolbox new filter title": "ตัวกรองใหม่",
+        "Settings toolbox edit filter title": "แก้ไขตัวกรอง",
+        "Settings toolbox delete filter title": "ลบตัวกรอง",
+        "Settings toolbox reset data title": "รีเซ็ตข้อมูล",
+        "Settings toolbox donate label": "บริจาคผ่าน:"
     }
 }

@@ -936,13 +936,13 @@
         "!": "!",
         "?": "?",
         "Normal Form": "Forma Castform",
-        "Sunny Form": "Sunny Form",
-        "Rainy Form": "Rainy Form",
-        "Snowy Form": "Snowy Form",
+        "Sunny Form": "Forma Sole",
+        "Rainy Form": "Forma Pioggia",
+        "Snowy Form": "Forma Nuvola di Neve",
         "Normal Forme": "Forma Normale",
-        "Attack Forme": "Attack Forme",
-        "Defense Forme": "Defense Forme",
-        "Speed Forme": "Speed Forme",
+        "Attack Forme": "Forma Attacco",
+        "Defense Forme": "Forma Difesa",
+        "Speed Forme": "Forma Velocità",
         "Plant Cloak": "Manto Pianta",
         "Sandy Cloak": "Manto Sabbia",
         "Trash Cloak": "Manto Scarti",
@@ -1057,7 +1057,7 @@
         "Alola": "Alola",
         "Galar": "Galar",
         "Hisui": "Hisui",
-        "Age": "et�",
+        "Age": "età",
         "Buddy": "Compagno",
         "CandyXL": "caramellaL",
         "Costume": "costume",
@@ -1099,10 +1099,21 @@
     },
     "Phrases": {
         "Caption": "La mia lista dei desideri (copia tutto e incolla così com'è):",
-        "Caption2": "Filtri aggiuntivi (non tagliare):",
+        "Caption2": "Filtri aggiuntivi (non tagliati):",
         "Postscript": "Crea il tuo filtro su fly33.github.io/pogo_filter/"
     },
     "UI": {
-        "Filter": "Filtro rapido"
+        "Filter placeholder": "Filtro rapido",
+        "Textarea placeholder": "Il tuo filtro Pokémon appare qui. Seleziona alcuni pokémon qui sotto. Inoltre puoi incollare tutti i filtri esistenti qui.",
+        "Settings toolbox title": "Impostazioni",
+        "Settings toolbox interface language title": "Lingua dell'interfaccia:",
+        "Settings toolbox filter language label": "Lingua del filtro:",
+        "Settings toolbox trade label": "Per gli scambi",
+        "Settings toolbox compact label": "Compatto",
+        "Settings toolbox new filter title": "nuovo filtro",
+        "Settings toolbox edit filter title": "modifica filtro",
+        "Settings toolbox delete filter title": "elimina filtro",
+        "Settings toolbox reset data title": "reimpostare i dati",
+        "Settings toolbox donate label": "Donate via:"
     }
 }
