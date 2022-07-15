@@ -1106,7 +1106,7 @@
         "Filter placeholder": "ตัวกรองด่วน",
         "Textarea placeholder": "ตัวกรองโปเกมอนของคุณจะปรากฏขึ้นที่นี่ เลือกโปเกมอนด้านล่าง นอกจากนี้ คุณยังสามารถวางตัวกรองที่มีอยู่ได้ที่นี่",
         "Settings toolbox title": "การตั้งค่า",
-        "Settings toolbox interface language title": "ภาษาอินเทอร์เฟซ:",
+        "Settings toolbox interface language label": "ภาษาอินเทอร์เฟซ:",
         "Settings toolbox filter language label": "ภาษาของตัวกรอง:",
         "Settings toolbox trade label": "เพื่อการค้า",
         "Settings toolbox compact label": "กะทัดรัด",

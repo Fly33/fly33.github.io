@@ -1106,7 +1106,7 @@
         "Filter placeholder": "Быстрый фильтр",
         "Textarea placeholder": "Здесь появится ваш фильтр покемонов. Выберите несколько покемонов ниже. Также вы можете вставить сюда любые существующие фильтры.",
         "Settings toolbox title": "Настройки",
-        "Settings toolbox interface language title": "Язык интерфейса:",
+        "Settings toolbox interface language label": "Язык интерфейса:",
         "Settings toolbox filter language label": "Язык фильтра:",
         "Settings toolbox trade label": "Для обменов",
         "Settings toolbox compact label": "Компактный",

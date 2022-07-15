@@ -1106,7 +1106,7 @@
         "Filter placeholder": "빠른 필터",
         "Textarea placeholder": "포켓몬 필터가 여기에 나타납니다. 아래에서 일부 포켓몬을 선택하십시오. 또한 여기에 기존 필터를 붙여넣을 수 있습니다.",
         "Settings toolbox title": "설정",
-        "Settings toolbox interface language title": "인터페이스 언어:",
+        "Settings toolbox interface language label": "인터페이스 언어:",
         "Settings toolbox filter language label": "필터 언어:",
         "Settings toolbox trade label": "거래용",
         "Settings toolbox compact label": "콤팩트",

@@ -204,8 +204,6 @@ function load_list() {
     shiny = 0;
     costume = 0;
 
-//    let l10n = l10n_by_id[storage.language].data;
-
     $('#compact').prop('checked', list.compact);
     for (let i = 0; i < data.length; ++i) {
         data[i].checked = 0;
@@ -1171,12 +1169,49 @@ function parse(e) {
     load_list();
 }
 
+function update_ui_language() {
+    let l10n = l10n_by_id[storage.ui_language].data;
+    for (let i = 0; i < data.length; ++i) {
+        if (i === 0 || data[i].region !== data[i-1].region)
+            $(`#${data[i].region}`).text(l10n.filters[data[i].region.toLowerCase()]);
+        if (data[i].kinds.length == 0)
+            continue;
+        let title = `${data[i].dex}. ${l10n.names[data[i].name.toLowerCase()]}${(data[i].origin ? ' (' + l10n.forms[data[i].origin.toLowerCase()] + ')' : '')}${(data[i].form ? ' (' + l10n.forms[data[i].form.toLowerCase()] + ')' : '')}`;
+        $(`#${data[i].pvpoke_id}`).attr('title', title);
+        $(`#${data[i].pvpoke_id}_toolbox .title`).text(title);
+
+        let genus = data[i].genus;
+        for (let j = 0; j < genus.length; ++j) {
+            let title_genus = `${genus[j].kind.title ? ' (' + l10n.forms[genus[j].kind.title.toLowerCase()] + ')' : ''}${genus[j].male ? ' ♂' : ''}${genus[j].female ? ' ♀' : ''}${(genus[j].kind.shiny ? ' ✨' : '')}`;
+            $(`#${genus[j].id}`).attr('title', `${title}\n${title_genus}`);
+        }
+    }
+    
+    $(`#textarea`).attr('placeholder', l10n.ui['textarea placeholder']);
+    $(`#filter`).attr('placeholder', l10n.ui['filter placeholder']);
+    $(`#settings_toolbox .title`).text(l10n.ui['settings toolbox title']);
+    $(`#toolbox_ui_language_label`).text(l10n.ui['settings toolbox interface language label']);
+    $(`#toolbox_language_label`).text(l10n.ui['settings toolbox filter language label']);
+    $(`#toolbox_compact_label`).text(l10n.ui['settings toolbox compact label']);
+    $(`#new_list_button`).text('🔆 ' + l10n.ui['settings toolbox new filter title']);
+    $(`#edit_list_button`).text('✏️ ' + l10n.ui['settings toolbox edit filter title']);
+    $(`#delete_list_button`).text('❌ ' + l10n.ui['settings toolbox delete filter title']);
+    $(`#reset_data_button`).text('⚠️ ' + l10n.ui['settings toolbox reset data title']);
+    $(`#toolbox_donate_label`).text('💸 ' + l10n.ui['settings toolbox donate label']);
+}
+
 function on_language_change() {
     storage.language = $('#language').val();
     // for (let i = 0; i < data.length; ++i)
         // update(i);
     onfilter();
     generate();
+    save_all();
+}
+
+function on_ui_language_change() {
+    storage.ui_language = $('#ui_language').val();
+    update_ui_language();
     save_all();
 }
 
@@ -1211,6 +1246,7 @@ function bind_triggers() {
     $('#new_list_button').click(() => on_list_new());
     $('#delete_list_button').click(on_list_delete);
     $('#language').bind('change', on_language_change);
+    $('#ui_language').bind('change', on_ui_language_change);
     $('textarea').bind('focus', on_textarea_focus);
     $('textarea').bind('paste', parse);
     $('textarea').bind('input', generate);
@@ -1225,6 +1261,7 @@ function process_l10n_data(_l10n) {
     l10n_by_id = {};
     for (let i = 0; i < l10n.length; ++i) {
         $('#language').append(`<option value="${l10n[i].id}">${l10n[i].name}</option>`);
+        $('#ui_language').append(`<option value="${l10n[i].id}">${l10n[i].name}</option>`);
         l10n_by_id[l10n[i].id] = l10n[i];
         request_json("l10n/" + l10n[i].filename, function(data) {
             l10n[i].data = {};
@@ -1307,13 +1344,12 @@ function prepare_data() {
 function prepare_content() {
     var content = $('div.content');
     for (let i = 0; i < data.length; ++i) {
+        if (i === 0 || data[i].region !== data[i-1].region)
+            content.append(`<div class="region"><span id="${data[i].region}"></span><hr/></div>`);
         if (data[i].kinds.length == 0)
             continue;
-        if (i === 0 || data[i].region !== data[i-1].region)
-            content.append('<div class="region"><span>' + data[i].region + '</span><hr/></div>');
-        let title = `${data[i].dex}. ${data[i].name}${(data[i].origin ? ' (' + data[i].origin + ')' : '')}${(data[i].form ? ' (' + data[i].form + ')' : '')}`;
-        content.append(`<span class="pokemon" title="${title}" id="${data[i].pvpoke_id}" style="display: none;"><s></s><i></i><u></u><img src="${image(i)}"></span>`);
-        let kinds_html = `<div id="${data[i].pvpoke_id}_toolbox" class="toolbox" style="display: none;"><div><div><div class="head"><div class="back"></div><div class="icon"><img class="icon" src="${image(i)}"></div><div class="title">${title}</div></div><div class="tags"></div><div class="body">`;
+        content.append(`<span class="pokemon" title="" id="${data[i].pvpoke_id}" style="display: none;"><s></s><i></i><u></u><img src="${image(i)}"></span>`);
+        let kinds_html = `<div id="${data[i].pvpoke_id}_toolbox" class="toolbox" style="display: none;"><div><div><div class="head"><div class="back"></div><div class="icon"><img class="icon" src="${image(i)}"></div><div class="title"></div></div><div class="tags"></div><div class="body">`;
 
         kinds_html += '<div class="section"><div class="section">';
         let genus = data[i].genus;
@@ -1324,8 +1360,7 @@ function prepare_content() {
                 else if (genus[j-1].kind.shiny != genus[j].kind.shiny)
                     kinds_html += '</div><div class="section">';
             }
-            let title_genus = `${genus[j].kind.title ? ' (' + genus[j].kind.title + ')' : ''}${genus[j].male ? ' ♂' : ''}${genus[j].female ? ' ♀' : ''}${(genus[j].kind.shiny ? ' ✨' : '')}`;
-            kinds_html += `<span class="pokemon${genus[j].male ? " male" : ""}${genus[j].female ? " female" : ""}${genus[j].kind.shiny ? " shiny" : ""}" title="${title}\n${title_genus}" id="${genus[j].id}"><s></s><i></i><u></u></span>`;
+            kinds_html += `<span class="pokemon${genus[j].male ? " male" : ""}${genus[j].female ? " female" : ""}${genus[j].kind.shiny ? " shiny" : ""}" title="" id="${genus[j].id}"><s></s><i></i><u></u></span>`;
         }
         kinds_html += '</div></div>';
 
@@ -1371,14 +1406,18 @@ function load_all() {
     if (!storage.lists)
         storage.lists = {};
     if (!storage.language)
-        storage.language = l10n[0].id;
+        storage.language = "en";
+    if (!storage.ui_language)
+        storage.ui_language = "en";
     for (let name in storage.lists) {
         $('#list select').append($('<option></option>').prop('value', name).text(name));
     }
     $('#list select option:first-child').prop('selected', true);
     $(`#language option[value=${storage.language}]`).prop('selected', true);
+    $(`#ui_language option[value=${storage.ui_language}]`).prop('selected', true);
 
     check_l10n();
+    update_ui_language();
     on_list_change();
     bind_triggers();
 }

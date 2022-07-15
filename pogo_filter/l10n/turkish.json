@@ -1106,7 +1106,7 @@
         "Filter placeholder": "Hızlı filtre",
         "Textarea placeholder": "Pokemon filtreniz burada görünür. Aşağıdan bir pokemon seçin. Ayrıca mevcut filtreleri buraya yapıştırabilirsiniz.",
         "Settings toolbox title": "Ayarlar",
-        "Settings toolbox interface language title": "Arayüz dili:",
+        "Settings toolbox interface language label": "Arayüz dili:",
         "Settings toolbox filter language label": "Filtre dili:",
         "Settings toolbox trade label": "Takaslar için",
         "Settings toolbox compact label": "Kompakt",

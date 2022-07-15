@@ -1106,7 +1106,7 @@
         "Filter placeholder": "Schnellfilter",
         "Textarea placeholder": "Ihr Pokemon-Filter erscheint hier. Wählen Sie unten ein Pokémon aus. Sie können hier auch alle vorhandenen Filter einfügen.",
         "Settings toolbox title": "Einstellungen",
-        "Settings toolbox interface language title": "Schnittstellensprache:",
+        "Settings toolbox interface language label": "Schnittstellensprache:",
         "Settings toolbox filter language label": "Filtersprache:",
         "Settings toolbox trade label": "Für Geschäfte",
         "Settings toolbox compact label": "Kompakt",

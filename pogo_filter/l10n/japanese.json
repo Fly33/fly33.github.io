@@ -1106,7 +1106,7 @@
         "Filter placeholder": "クイックフィルター",
         "Textarea placeholder": "ポケモンフィルターがここに表示されます。 以下からいくつかのポケモンを選択してください。 また、既存のフィルターをここに貼り付けることもできます。",
         "Settings toolbox title": "設定",
-        "Settings toolbox interface language title": "インターフェイス言語：",
+        "Settings toolbox interface language label": "インターフェイス言語：",
         "Settings toolbox filter language label": "フィルター言語：",
         "Settings toolbox trade label": "交換のため",
         "Settings toolbox compact label": "コンパクト",

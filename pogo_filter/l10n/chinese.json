@@ -1106,7 +1106,7 @@
         "Filter placeholder": "快速過濾器",
         "Textarea placeholder": "您的神奇寶貝過濾器出現在這裡。 在下面選擇一些神奇寶貝。 您也可以在此處粘貼任何現有的過濾器。",
         "Settings toolbox title": "設置",
-        "Settings toolbox interface language title": "界面語言：",
+        "Settings toolbox interface language label": "界面語言：",
         "Settings toolbox filter language label": "過濾語言：",
         "Settings toolbox trade label": "對於交易",
         "Settings toolbox compact label": "袖珍的",

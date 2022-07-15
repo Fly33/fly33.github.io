@@ -1106,7 +1106,7 @@
         "Filter placeholder": "Filtro rápido",
         "Textarea placeholder": "Tu filtro de pokémon aparece aquí. Selecciona algunos pokémon a continuación. También puede pegar cualquier filtro existente aquí.",
         "Settings toolbox title": "Ajustes",
-        "Settings toolbox interface language title": "Lenguaje de interfaz:",
+        "Settings toolbox interface language label": "Lenguaje de interfaz:",
         "Settings toolbox filter language label": "Idioma del filtro:",
         "Settings toolbox trade label": "para intercambios",
         "Settings toolbox compact label": "Compacto",
