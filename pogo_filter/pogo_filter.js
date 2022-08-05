@@ -820,15 +820,17 @@ function make_checker(tree, l10n) {
     function family(op) {
         return function(record) {
             let res = {valid: none, value: 0};
-            for (let member of record.family) {
-                let x = op(member);
-                if (x.valid === none)
-                    continue;
-                if (x.valid && x.valid !== unclear)
-                    return {valid: x.valid, value: res.value + x.value};
-                if (res.valid !== unclear) {
-                    res.valid = x.valid;
-                    res.value += x.value;
+            for (let member of record.data.family) {
+                for (let poke of member.genus) {
+                    let x = op(poke);
+                    if (x.valid === none)
+                        continue;
+                    if (x.valid && x.valid !== unclear)
+                        return {valid: x.valid, value: res.value + x.value};
+                    if (res.valid !== unclear) {
+                        res.valid = x.valid;
+                        res.value += x.value;
+                    }
                 }
             }
             return res;
