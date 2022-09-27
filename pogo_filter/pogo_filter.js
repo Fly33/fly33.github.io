@@ -163,7 +163,7 @@ function bulbapedia_image(bulbapedia_id, size) {
 }
 
 function fandom_image(fandom_id, size) {
-    return `https://static.wikia.nocookie.net/pokemongo/images/${fandom_id[0]}/${fandom_id}.png/revision/latest/smart/width/${size}/height/${size}`;
+    return `https://static.wikia.nocookie.net/pokemongo/images/${fandom_id[0]}/${fandom_id}.png/revision/latest/scale-to-width-down/${size}`;
 }
 
 function image(i) {

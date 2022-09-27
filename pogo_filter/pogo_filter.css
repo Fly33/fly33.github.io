@@ -324,9 +324,6 @@ label {
     margin: 0;
     padding: 0;
 }
-.toolbox .pokemon img {
-    mix-blend-mode: multiply;
-}
 .pokemon.checked {
     border-color: green;
     background-color: #efe;
