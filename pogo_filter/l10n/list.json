@@ -55,6 +55,16 @@
         "filename": "thai.json"
     },
     {
+        "id": "id",
+        "name": "indonesian",
+        "filename": "indonesian.json"
+    },
+    {
+        "id": "hi",
+        "name": "hindi",
+        "filename": "hindi.json"
+    },
+    {
         "id": "ru",
         "name": "russian",
         "filename": "russian.json"
