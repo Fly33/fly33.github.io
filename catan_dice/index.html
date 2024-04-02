@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-size: 20px;
+            position: relative;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            cursor: pointer;
+            background-image: url('background.jpg'); /* Replace with your image URL */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            width: 100vw;
+            margin: 0;
+            padding: 0;
+            scroll: none;
+            overflow: hidden;
+        }
+        #number {
+            transition: opacity 1s, color 3s, font-size 1s;
+            //font-family: arial;
+            font-size: 50vmin;
+            font-weight: bold;
+            color: white;
+            position: relative;
+            text-shadow: 0px 0px 50px black;
+            max-height: 100%;
+            max-width: 100%;
+            overflow: hidden;
+        }
+        #gear {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 10vh;
+            height: 10vh;
+            background: url('gear.png') no-repeat center;
+            background-size: contain;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        #dialog {
+            display: none;
+        }
+        #slider {
+            margin: 10px;
+        }
+        #apply {
+            margin: 10px;
+        }
+        .no-transition {
+            transition: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="number">
+    </div>
+    <div id="gear" onclick="openDialog()"></div>
+    <div id="dialog" title="Configuration" onmousedown="event.stopPropagation()" onmouseup="event.stopPropagation()" ontouchstart="event.stopPropagation()" ontouchend="event.stopPropagation()">
+        <center>
+            <canvas id="histogram"></canvas> <!-- Histogram will be drawn here -->
+            <p>
+                Tolerance: <span id="tolerance"></span>
+                <span class="hint" title="The lower tolerance level you set the more steady the distribution will be. The new tolerance level will be applied after restart only." style="color: gray;">ⓘ</span>
+            </p>
+            <div id="slider"></div>
+            <button id="apply" onclick="applyAndRestart()">Apply and restart</button>
+            <p style="margin: 0; font-size: 10pt;">Catan dice mod © <a href="https://www.reddit.com/user/Fly_33/">Fly33</a></p>
+        </center>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+    <script>
+        function create2DArray(rows, cols, value) {
+            let arr = new Array(rows);
+            for (let i = 0; i < rows; i++) {
+                arr[i] = new Array(cols).fill(value);
+            }
+            return arr;
+        }
+
+        function diceRoll(m) {
+            let c = 0;
+            for (let i = 0; i < 6; i++) {
+                for (let j = 0; j < 6; j++) {
+                    if (m[i][j] <= 0) {
+                        continue;
+                    }
+                    c += m[i][j];
+                }
+            }
+            let x = Math.floor(Math.random() * c);
+            let a = 0;
+            let i, j;
+            outerLoop:
+            for (i = 0; i < 6; i++) {
+                for (j = 0; j < 6; j++) {
+                    if (m[i][j] <= 0) {
+                        continue;
+                    }
+                    a += m[i][j];
+                    if (x < a) {
+                        break outerLoop;
+                    }
+                }
+            }
+            if (i === 6 && j === 6) {
+                throw new Error("Invalid state");
+            }
+            m[i][j] -= 36;
+            let r = [i, j];
+            for (let i = 0; i < 6; i++) {
+                for (let j = 0; j < 6; j++) {
+                    m[i][j] += 1;
+                }
+            }
+            return r;
+        }
+
+        // Function to save data to local storage
+        function saveToLocalStorage(key, data) {
+            try {
+                const jsonData = JSON.stringify(data);
+                localStorage.setItem(key, jsonData);
+            } catch (error) {
+                console.error('Error saving to local storage', error);
+            }
+        }
+
+        // Function to load data from local storage
+        function loadFromLocalStorage(key) {
+            try {
+                const jsonData = localStorage.getItem(key);
+                return jsonData ? JSON.parse(jsonData) : null;
+            } catch (error) {
+                console.error('Error loading from local storage', error);
+                return null;
+            }
+        }
+        
+        var data;
+        var holdTimeout;
+
+        function startHold() {
+            let number = document.getElementById('number');
+            number.style.opacity = 0;
+            number.style.fontSize = '1vmin';
+            holdTimeout = setTimeout(changeNumber, 1000);
+        }
+
+        function stopHold() {
+            clearTimeout(holdTimeout);
+            let number = document.getElementById('number');
+            number.style.opacity = 1;
+            number.style.fontSize = '50vmin';
+        }
+
+        function updateNumber() {
+            if (typeof data.currentNumber === 'number') {
+                document.getElementById('number').innerHTML = data.currentNumber + 2;
+            } else {
+                document.getElementById('number').innerHTML = "?";
+            }
+        }
+
+        function changeNumber() {
+            let number = document.getElementById('number');
+            number.style.transition = 'none';
+            number.style.fontSize = '90vmin';
+            number.style.color = 'red';
+
+            setTimeout(function() {
+                let number = document.getElementById('number');
+                number.style.transition = 'opacity 1s, color 3s, font-size 1s';
+                number.style.opacity = 1;
+                number.style.color = 'white';
+                number.style.fontSize = '50vmin';
+            }, 0);
+            
+            let dice = diceRoll(data.grid);
+            data.currentNumber = dice[0] + dice[1];
+            ++data.stats[data.currentNumber];
+
+            saveToLocalStorage('data', data);
+
+            updateNumber();
+            updateHistogram(); // Update histogram
+        }
+
+        function applyAndRestart() {
+            data = defaultData(data.tolerance);
+            saveToLocalStorage('data', data);
+            location.reload();
+        }
+
+        function openDialog() {
+            $("#dialog").dialog("open");
+        }
+        
+        var myChart;
+
+        function updateHistogram() {
+            var ctx = document.getElementById('histogram').getContext('2d');
+            if (myChart) {
+                myChart.destroy();
+            }
+            myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Array.from({length: 11}, (_, i) => i + 2), // Labels are numbers from 2 to 12
+                    datasets: [{
+                        label: '# of times',
+                        data: data.stats,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+        
+        function defaultData(tolerance) {
+            return {
+                currentNumber: undefined,
+                tolerance: tolerance,
+                grid: create2DArray(6, 6, tolerance),
+                stats: new Array(11).fill(0),
+            };
+        }
+
+        window.onload = function() {
+            data = loadFromLocalStorage('data');
+            if (!data) {
+                data = defaultData(35);
+            }
+
+            $('body').on("mousedown", startHold).on("mouseup", stopHold).on("touchstart", startHold).on("touchend", stopHold);
+            
+            $("#dialog").dialog({
+                autoOpen: false,
+                width: 400,
+                open: function(event, ui) {
+                    $('body').off("mousedown").off("mouseup").off("touchstart").off("touchend");
+                },
+                close: function(event, ui) {
+                    $('body').on("mousedown", startHold).on("mouseup", stopHold).on("touchstart", startHold).on("touchend", stopHold);
+                },
+            });
+            $("#slider").slider({
+                range: "max",
+                min: 1,
+                max: 100,
+                value: data.tolerance,
+                slide: function(event, ui) {
+                    $("#tolerance").text(ui.value);
+                    data.tolerance = ui.value;
+                }
+            });
+            $("#tolerance").text($("#slider").slider("value"));
+
+            updateNumber();
+            updateHistogram();
+        }
+    </script>
+</body>
+</html>
