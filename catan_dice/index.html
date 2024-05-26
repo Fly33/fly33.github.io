@@ -56,7 +56,9 @@
             display: none;
         }
         #slider {
-            margin: 10px;
+            display: block;
+            width: 100%;
+            height: 2em;
         }
         #apply {
             margin: 10px;
@@ -77,9 +79,10 @@
                 Tolerance: <span id="tolerance"></span>
                 <span class="hint" title="The lower tolerance level you set the more steady the distribution will be. The new tolerance level will be applied after restart only." style="color: gray;">ⓘ</span>
             </p>
-            <div id="slider"></div>
+            <!--div id="slider"></div-->
+            <input type="range" id="slider" min="1" max="100">
             <button id="apply" onclick="applyAndRestart()">Apply and restart</button>
-            <p style="margin: 0; font-size: 10pt;">Catan dice mod © <a href="https://www.reddit.com/user/Fly_33/">Fly33</a></p>
+            <p style="margin: 0; font-size: 10pt;">Catan dice generator © <a href="https://www.reddit.com/user/Fly_33/">Fly33</a></p>
         </center>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -203,7 +206,7 @@
         }
 
         function applyAndRestart() {
-            data = defaultData(data.tolerance);
+            data = defaultData(tolerance);
             saveToLocalStorage('data', data);
             location.reload();
         }
@@ -263,22 +266,19 @@
                 width: 400,
                 open: function(event, ui) {
                     $('body').off("mousedown").off("mouseup").off("touchstart").off("touchend");
+                    tolerance = data.tolerance;
+                    $("#slider").val(tolerance);
+                    $("#tolerance").text(tolerance);
                 },
                 close: function(event, ui) {
                     $('body').on("mousedown", startHold).on("mouseup", stopHold).on("touchstart", startHold).on("touchend", stopHold);
                 },
             });
-            $("#slider").slider({
-                range: "max",
-                min: 1,
-                max: 100,
-                value: data.tolerance,
-                slide: function(event, ui) {
-                    $("#tolerance").text(ui.value);
-                    data.tolerance = ui.value;
-                }
+
+            $("#slider").on('input', function() {
+                $("#tolerance").text(this.value);
+                tolerance = +this.value;
             });
-            $("#tolerance").text($("#slider").slider("value"));
 
             updateNumber();
             updateHistogram();
