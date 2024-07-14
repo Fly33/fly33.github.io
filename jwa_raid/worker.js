@@ -3,7 +3,7 @@ var Module = {
         let inputIndex = 0;
         Module.output = "";
         
-        console.log(Module.input);
+        // console.log(Module.input);
 
         function stdin() {
             if (inputIndex < Module.input.length)

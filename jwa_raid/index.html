@@ -28,20 +28,56 @@
 </div>
 <div class="container">
   <div class="controls">
-    <!-- Boss -->
+    <dialog id="strategyDialog">
+      <div class="row">
+        <label>Title: <input type="text" class="title" placeholder="title"></label>
+      </div>
+      <div class="row">
+        <button class="link">Copy link 🔗</button>
+      </div>
+      <div class="row">
+        <button class="new">New</button>
+        <button class="duplicate">Duplicate</button>
+        <button class="delete">Delete</button>
+      </div>
+      <div class="row">
+        <button class="ok">Ok</button>
+        <button class="cancel">Cancel</button>
+      </div>
+    </dialog>
+  
     <div class="row">
+      <select class="strategy" id="strategy">
+      </select>
+      <button class="menu" id="menu">⋮</button>
+    </div>
+    
+    <!-- Boss -->
+    <dialog id="bossDialog">
+      <div class="row boss">
+        <img class="creature minion" src="creature.png"/>
+        <img class="creature boss" src="creature.png"/>
+        <img class="creature minion" src="creature.png"/>
+      </div>
+      <div class="row">
+        <div class="cell">
+          <select class="creature boss">
+            <option></option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <button class="ok">Ok</button>
+        <button class="cancel">Cancel</button>
+      </div>
+    </dialog>
+
+    <div class="row" id="boss">
       <div class="cell">
         <div class="row boss">
-            <img class="creature minion" src="creature.png"/>
-            <img class="creature boss" src="creature.png"/>
-            <img class="creature minion" src="creature.png"/>
-        </div>
-        <div class="row">
-          <div class="cell">
-            <select class="creature boss" id="boss-select">
-              <option></option>
-            </select>
-          </div>
+          <img class="creature minion" src="creature.png"/>
+          <img class="creature boss" src="creature.png"/>
+          <img class="creature minion" src="creature.png"/>
         </div>
       </div>
     </div>
@@ -78,8 +114,8 @@
         </div>
       </div>
       <div class="row">
-          <button class="ok">Ok</button>
-          <button class="cancel">Cancel</button>
+        <button class="ok">Ok</button>
+        <button class="cancel">Cancel</button>
       </div>
     </dialog>
 
@@ -212,9 +248,16 @@
         </div>
     </div>
     <div class="row">
-        <div class="cell">
-          <button class="run" id="run">Run</button>
-        </div>
+          <select class="method">
+            <option value="check" selected>Check</option>
+            <option value="explain_defeat">Explain defeat</option>
+            <option value="explain_win">Eplain win</option>
+            <option value="chance">Chance</option>
+            <option value="search_rand">Random search</option>
+            <option value="search_full">Full search</option>
+          </select>
+          <!--input class="n_tries" type="number" value="1000" disabled-->
+          <button class="run">Run</button>
     </div>
   </div>
 

@@ -80,13 +80,12 @@ img.ability {
 }
 select.ability {
   margin: 5px;
-  max-width: 50px;
 }
 button.control {
   margin: 5px;
 }
 select.team {
-  max-width: 50px;
+  margin: 5px;
 }
 div.ability {
   flex-shrink: 0;
@@ -162,4 +161,19 @@ div#abilities-container > div.turn:nth-child(even) {
 }
 div.team {
   background-color: #ddd;
+}
+button.menu {
+  background: inherit;
+  border: inherit;
+  margin: 5px;
+  font-weight: bold;
+}
+select.strategy {
+  margin: 5px;
+}
+button {
+  margin: 5px;
+}
+select.method {
+  margin: 5px;
 }
