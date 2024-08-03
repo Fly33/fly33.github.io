@@ -152,19 +152,19 @@
         }
 
         // Function to save data to local storage
-        function saveToLocalStorage(key, data) {
+        function saveToLocalStorage(data) {
             try {
                 const jsonData = JSON.stringify(data);
-                localStorage.setItem(key, jsonData);
+                localStorage.setItem(location.pathname, jsonData);
             } catch (error) {
                 console.error('Error saving to local storage', error);
             }
         }
 
         // Function to load data from local storage
-        function loadFromLocalStorage(key) {
+        function loadFromLocalStorage() {
             try {
-                const jsonData = localStorage.getItem(key);
+                const jsonData = localStorage.getItem(location.pathname);
                 return jsonData ? JSON.parse(jsonData) : null;
             } catch (error) {
                 console.error('Error loading from local storage', error);
@@ -191,7 +191,10 @@
 
         function updateNumber() {
             if (typeof data.currentNumber === 'number') {
-                document.getElementById('number').innerHTML = data.currentNumber + 2;
+                let number = data.currentNumber + 2;
+                if (number == 6 || number == 9)
+                    number = number + "."
+                document.getElementById('number').innerHTML = number;
             } else {
                 document.getElementById('number').innerHTML = "?";
             }
@@ -215,7 +218,7 @@
             data.currentNumber = dice[0] + dice[1];
             ++data.stats[data.currentNumber];
 
-            saveToLocalStorage('data', data);
+            saveToLocalStorage(data);
 
             updateNumber();
             updateHistogram(); // Update histogram
@@ -223,7 +226,7 @@
 
         function applyAndRestart() {
             data = defaultData(tolerance);
-            saveToLocalStorage('data', data);
+            saveToLocalStorage(data);
             location.reload();
         }
 
@@ -270,7 +273,7 @@
         }
 
         window.onload = function() {
-            data = loadFromLocalStorage('data');
+            data = loadFromLocalStorage();
             if (!data) {
                 data = defaultData(35);
             }
