@@ -41,13 +41,28 @@
             max-width: 100%;
             overflow: hidden;
         }
-        #gear {
+        #number.dotted::after {
+          content: ".";
+          font-size: 12vmin;
+        }
+        #undo {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 3vh;
+            left: 3vh;
             width: 10vh;
             height: 10vh;
-            background: url('gear.png') no-repeat center;
+            background: url('undo.png') no-repeat center;
+            background-size: contain;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        #settings {
+            position: absolute;
+            top: 3vh;
+            right: 3vh;
+            width: 10vh;
+            height: 10vh;
+            background: url('settings.png') no-repeat center;
             background-size: contain;
             border-radius: 50%;
             cursor: pointer;
@@ -65,6 +80,16 @@
         }
         .no-transition {
             transition: none;
+        }
+        p.value {
+          margin-top: 10px;
+          margin-bottom: 0px;
+          font-size: 16pt;
+          font-family: times;
+        }
+        p.footer {
+          margin: 0;
+          font-size: 10pt;
         }
     </style>
 </head>
@@ -87,18 +112,25 @@
     <!-- /Yandex.Metrika counter -->
     <div id="number">
     </div>
-    <div id="gear" onclick="openDialog()"></div>
+    <div id="undo" onclick="undo()"></div>
+    <div id="settings" onclick="openDialog()"></div>
     <div id="dialog" title="Configuration" onmousedown="event.stopPropagation()" onmouseup="event.stopPropagation()" ontouchstart="event.stopPropagation()" ontouchend="event.stopPropagation()">
         <center>
+            <p class="value">
+              Total number of dice rolls: <span id="n_dice_rolls"></span>
+            </p>
             <canvas id="histogram"></canvas> <!-- Histogram will be drawn here -->
-            <p>
+            <p class="value">
                 Tolerance: <span id="tolerance"></span>
                 <span class="hint" title="The lower tolerance level you set the more steady the distribution will be. The new tolerance level will be applied after restart only." style="color: gray;">ⓘ</span>
             </p>
-            <!--div id="slider"></div-->
             <input type="range" id="slider" min="1" max="100">
             <button id="apply" onclick="applyAndRestart()">Apply and restart</button>
-            <p style="margin: 0; font-size: 10pt;">Catan dice generator © <a href="https://www.reddit.com/user/Fly_33/">Fly33</a></p>
+            <p class="footer">
+              Catan dice generator © <a href="https://www.reddit.com/user/Fly_33/">Fly33</a>,
+              <!--discuss on <a href="https://t.me/catan_dice">Telegram</a>,-->
+              donate via <a href="https://patreon.com/fly33">Patreon</a>
+            </p>
         </center>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -190,38 +222,42 @@
         }
 
         function updateNumber() {
-            if (typeof data.currentNumber === 'number') {
-                let number = data.currentNumber + 2;
-                if (number == 6 || number == 9)
-                    number = number + "."
-                document.getElementById('number').innerHTML = number;
+            let element = document.getElementById('number');
+            if (data.history.length > 0) {
+                let number = data.history[data.history.length-1] + 2;
+                if (number === 6 || number === 9)
+                    element.classList.add('dotted');
+                else
+                    element.classList.remove('dotted');
+                element.innerHTML = number;
             } else {
-                document.getElementById('number').innerHTML = "?";
+                element.innerHTML = "?";
             }
         }
 
         function changeNumber() {
-            let number = document.getElementById('number');
-            number.style.transition = 'none';
-            number.style.fontSize = '90vmin';
-            number.style.color = 'red';
+            let numberElement = document.getElementById('number');
+            numberElement.style.transition = 'none';
+            numberElement.style.fontSize = '90vmin';
+            numberElement.style.color = 'red';
 
             setTimeout(function() {
-                let number = document.getElementById('number');
-                number.style.transition = 'opacity 1s, color 3s, font-size 1s';
-                number.style.opacity = 1;
-                number.style.color = 'white';
-                number.style.fontSize = '50vmin';
+                let numberElement = document.getElementById('number');
+                numberElement.style.transition = 'opacity 1s, color 3s, font-size 1s';
+                numberElement.style.opacity = 1;
+                numberElement.style.color = 'white';
+                numberElement.style.fontSize = '50vmin';
             }, 0);
             
             let dice = diceRoll(data.grid);
-            data.currentNumber = dice[0] + dice[1];
-            ++data.stats[data.currentNumber];
+            let number = dice[0] + dice[1];
+            data.history.push(number)
+            ++data.stats[number];
 
             saveToLocalStorage(data);
 
             updateNumber();
-            updateHistogram(); // Update histogram
+            updateDialog(); // Update histogram
         }
 
         function applyAndRestart() {
@@ -236,7 +272,9 @@
         
         var myChart;
 
-        function updateHistogram() {
+        function updateDialog() {
+            document.getElementById('n_dice_rolls').innerHTML = data.history.length;
+            
             var ctx = document.getElementById('histogram').getContext('2d');
             if (myChart) {
                 myChart.destroy();
@@ -265,17 +303,33 @@
         
         function defaultData(tolerance) {
             return {
-                currentNumber: undefined,
+                history: [],
                 tolerance: tolerance,
                 grid: create2DArray(6, 6, tolerance),
                 stats: new Array(11).fill(0),
             };
+        }
+        
+        function undo() {
+            if (data.history.length == 0)
+                return;
+            if (!confirm("Undo the last dice roll?"))
+                return;
+            let number = data.history.pop();
+            --data.stats[number];
+
+            saveToLocalStorage(data);
+
+            updateNumber();
+            updateDialog(); // Update histogram
         }
 
         window.onload = function() {
             data = loadFromLocalStorage();
             if (!data) {
                 data = defaultData(35);
+            } else if (data.history === undefined) {
+                data = defaultData(data.tolerance);
             }
 
             $('body').on("mousedown", startHold).on("mouseup", stopHold).on("touchstart", startHold).on("touchend", stopHold);
@@ -300,7 +354,7 @@
             });
 
             updateNumber();
-            updateHistogram();
+            updateDialog();
         }
     </script>
 </body>
