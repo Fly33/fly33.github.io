@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Moscow: Relocation Calculator</title>
+    <style>
+        html, body {
+            height: 100%;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background: url('background.png') center bottom / cover no-repeat;
+            background-attachment: fixed;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: row;
+            gap: 1rem;
+            padding: 1rem;
+            opacity: 0.8;
+        }
+
+        .section {
+            flex: 1;
+            border: 1px solid #ccc;
+            padding: 1rem;
+            border-radius: 5px;
+            background-color: rgba(249, 249, 249, 0.8);
+        }
+
+        .row {
+            margin-bottom: 1rem;
+            opacity: 0.9;
+        }
+
+        .row h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        .inputs {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .inputs label {
+            display: flex;
+            flex-direction: column;
+            font-size: 0.9rem;
+        }
+
+        .inputs input {
+            width: 100%;
+            max-width: calc(100% - 1rem);
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .textarea-container {
+            margin: 0 auto;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .textarea-inner-container {
+            margin: 1rem;
+        }
+
+        textarea {
+            width: 100%;
+            height: 300px;
+            padding: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+            background-color: rgba(255, 255, 255, 0.8);
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+        }
+    </style>
+    <script>
+        function validateInputs() {
+            const inputs = document.querySelectorAll('.inputs input');
+            let allFilled = true;
+
+            Object.values(inputs).forEach(input => {
+                if (!input.value) {
+                    allFilled = false;
+                }
+            });
+            
+            if (!allFilled)
+                return;
+
+            const values = {
+                x1o: +document.querySelector('.section:nth-of-type(1) .row:nth-of-type(1) label:nth-of-type(1) input').value.trim(),
+                y1o: +document.querySelector('.section:nth-of-type(1) .row:nth-of-type(1) label:nth-of-type(2) input').value.trim(),
+                z1o: +document.querySelector('.section:nth-of-type(1) .row:nth-of-type(1) label:nth-of-type(3) input').value.trim(),
+                x2o: +document.querySelector('.section:nth-of-type(1) .row:nth-of-type(2) label:nth-of-type(1) input').value.trim(),
+                y2o: +document.querySelector('.section:nth-of-type(1) .row:nth-of-type(2) label:nth-of-type(2) input').value.trim(),
+                z2o: +document.querySelector('.section:nth-of-type(1) .row:nth-of-type(2) label:nth-of-type(3) input').value.trim(),
+                x1n: +document.querySelector('.section:nth-of-type(2) .row:nth-of-type(1) label:nth-of-type(1) input').value.trim(),
+                y1n: +document.querySelector('.section:nth-of-type(2) .row:nth-of-type(1) label:nth-of-type(2) input').value.trim(),
+                z1n: +document.querySelector('.section:nth-of-type(2) .row:nth-of-type(1) label:nth-of-type(3) input').value.trim(),
+                x2n: +document.querySelector('.section:nth-of-type(2) .row:nth-of-type(2) label:nth-of-type(1) input').value.trim(),
+                y2n: +document.querySelector('.section:nth-of-type(2) .row:nth-of-type(2) label:nth-of-type(2) input').value.trim(),
+                z2n: +document.querySelector('.section:nth-of-type(2) .row:nth-of-type(2) label:nth-of-type(3) input').value.trim()
+            };
+            
+            console.log(values)
+
+            processNumbers(values);
+        }
+
+        function processNumbers(values) {
+            const textarea = document.querySelector('textarea');
+            textarea.value = '';
+
+            // Step 1
+            let correction = false;
+            const deltaYo = Math.abs(values.y2o - values.y1o);
+            const deltaYn = Math.abs(values.y2n - values.y1n);
+            if (deltaYo !== deltaYn) {
+                const y_correction = values.y2n < values.y1n ? -deltaYo : deltaYo;
+                values.y2n = values.y1n + y_correction;
+                correction = true;
+            }
+
+            // Step 2
+            const rotateVector = (x, z, angle) => {
+                for (let a = 0; a < angle; ++a)
+                    [x, z] = [-z, x]
+                return {
+                    x: x,
+                    z: z
+                };
+            };
+
+            let bestMatch = null;
+            let bestAngle = 0;
+            let maxDistance = -Infinity;
+
+            const rotation_text = {
+              0: "Без поворота",
+              1: "Поворот по часовой стрелке на 90 градусов",
+              2: "Разворот на 180 граудсов",
+              3: "Поворот против часовой стрелки на 90 градусов",
+            };
+            
+            for (let angle = 0; angle < 4; ++angle) {
+                const rotated = rotateVector(values.x2o - values.x1o, values.z2o - values.z1o, angle);
+                const distance = rotated.x * (values.x2n - values.x1n) + rotated.z * (values.z2n - values.z1n);
+                console.log(`${rotation_text[angle]}\n`);
+                console.log(`${rotated.x} ${rotated.z}\n`);
+                console.log(`${rotated.x + values.x1n} ${rotated.z + values.z1n}\n`);
+                console.log(`${distance}\n`);
+                if (maxDistance < distance) {
+                    maxDistance = distance;
+                    bestMatch = rotated;
+                    bestAngle = angle;
+                }
+            }
+            
+            if (bestMatch.x !== values.x2n - values.x1n || bestMatch.z !== values.z2n - values.z1n) {
+                values.x2n = values.x1n + bestMatch.x;
+                values.z2n = values.z1n + bestMatch.z;
+                correction = true;
+            }
+
+            if (correction) {
+                textarea.value += `Вторая точка была скорректирована: x=${values.x2n}, y=${values.y2n}, z=${values.z2n}\n`;
+            }
+
+            textarea.value += `${rotation_text[bestAngle]}\n`;
+
+            // Step 3
+            const print_points = function(f, s) {
+                let result = `${f.x} ${f.y} ${f.z} ${["юго", "северо"][+(s.z-f.z>=0)]}-${["восток", "запад"][+(s.x-f.x>=0)]}\n`;
+                result += `${s.x} ${s.y} ${s.z} ${["северо", "юго"][+(s.z-f.z>=0)]}-${["запад", "восток"][+(s.x-f.x>=0)]}\n`;
+                return result;
+            }
+            
+            const o1 = {
+                x: values.x1o,
+                y: Math.min(values.y1o, values.y2o),
+                z: values.z1o,
+            };
+            const o2 = {
+                x: values.x2o,
+                y: Math.max(values.y1o, values.y2o),
+                z: values.z2o,
+            };
+
+            const n1 = {
+                x: values.x1n,
+                y: Math.min(values.y1n, values.y2n),
+                z: values.z1n,
+            };
+            const n2 = {
+                x: values.x2n,
+                y: Math.max(values.y1n, values.y2n),
+                z: values.z2n,
+            };
+            
+            textarea.value += `Изначальная ориентация:\n`;
+            textarea.value += print_points(o1, o2);
+            textarea.value += print_points(n1, n2);
+
+            const o1_ = {
+                x: Math.min(values.x1o, values.x2o),
+                y: Math.min(values.y1o, values.y2o),
+                z: Math.min(values.z1o, values.z2o)
+            };
+            const o2_ = {
+                x: Math.max(values.x1o, values.x2o),
+                y: Math.max(values.y1o, values.y2o),
+                z: Math.max(values.z1o, values.z2o)
+            };
+            
+            const o_rotated = rotateVector(o2_.x - o1_.x, o2_.z - o1_.z, bestAngle);
+
+            const n1_ = {
+                x: o_rotated.x > 0 ? Math.min(values.x1n, values.x2n) : Math.max(values.x1n, values.x2n),
+                y: Math.min(values.y1n, values.y2n),
+                z: o_rotated.z > 0 ? Math.min(values.z1n, values.z2n) : Math.max(values.z1n, values.z2n),
+            };
+            const n2_ = {
+                x: o_rotated.x > 0 ? Math.max(values.x1n, values.x2n) : Math.min(values.x1n, values.x2n),
+                y: Math.max(values.y1n, values.y2n),
+                z: o_rotated.z > 0 ? Math.max(values.z1n, values.z2n) : Math.min(values.z1n, values.z2n),
+            };
+
+            if (o1.x !== o1_.x || o1.y !== o1_.y || o1.z !== o1_.z) {
+                textarea.value += `Переориентация на северо-запад:\n`;
+                textarea.value += print_points(o1_, o2_);
+                textarea.value += print_points(n1_, n2_);
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="section">
+            <h2>Старый мир</h2>
+            <div class="row">
+                <h3>Первая точка</h3>
+                <div class="inputs">
+                    <label>
+                        x
+                        <input type="number" oninput="validateInputs()">
+                    </label>
+                    <label>
+                        y
+                        <input type="number" oninput="validateInputs()">
+                    </label>
+                    <label>
+                        z
+                        <input type="number" oninput="validateInputs()">
+                    </label>
+                </div>
+            </div>
+            <div class="row">
+                <h3>Вторая точка</h3>
+                <div class="inputs">
+                    <label>
+                        x
+                        <input type="number" oninput="validateInputs()">
+                    </label>
+                    <label>
+                        y
+                        <input type="number" oninput="validateInputs()">
+                    </label>
+                    <label>
+                        z
+                        <input type="number" oninput="validateInputs()">
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <h2>Новый мир</h2>
+            <div class="row">
+                <h3>Первая точка</h3>
+                <div class="inputs">
+                    <label>
+                        x
+                        <input type="number" oninput="validateInputs()">
+                    </label>
+                    <label>
+                        y
+                        <input type="number" oninput="validateInputs()">
+                    </label>
+                    <label>
+                        z
+                        <input type="number" oninput="validateInputs()">
+                    </label>
+                </div>
+            </div>
+            <div class="row">
+                <h3>Вторая точка (примерно)</h3>
+                <div class="inputs">
+                    <label>
+                        x
+                        <input type="number" oninput="validateInputs()">
+                    </label>
+                    <label>
+                        y
+                        <input type="number" oninput="validateInputs()">
+                    </label>
+                    <label>
+                        z
+                        <input type="number" oninput="validateInputs()">
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="textarea-container">
+      <div class="textarea-inner-container">
+        <textarea readonly></textarea>
+      </div>
+    </div>
+</body>
+</html>
