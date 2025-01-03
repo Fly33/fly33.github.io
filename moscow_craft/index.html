@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minecraft Moscow: Relocation Calculator</title>
+    <title>Responsive Form Page</title>
     <style>
         html, body {
             height: 100%;
@@ -11,8 +11,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            background: url('background.png') center bottom / cover no-repeat;
-            background-attachment: fixed;
+            background: url('background.png') center bottom / cover no-repeat; background-attachment: fixed;
         }
 
         .container {
@@ -38,6 +37,7 @@
 
         .row h3 {
             margin-bottom: 0.5rem;
+            margin-top: 1rem;
         }
 
         .inputs {
@@ -54,6 +54,13 @@
         .inputs input {
             width: 100%;
             max-width: calc(100% - 1rem);
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .inputs select {
             padding: 0.5rem;
             border: 1px solid #ccc;
             border-radius: 5px;
@@ -86,56 +93,83 @@
                 flex-direction: column;
             }
         }
+
+        .toggle-group h3 {
+            display: inline-block;
+            margin-top: 0;
+        }
+
+        .toggle-group input[type="radio"] {
+        }
+
+        .toggle-group input[type="radio"]:checked + label {
+            font-weight: bold;
+        }
+
+        .inputs-coordinates {
+            display: none;
+        }
+
+        .toggle-group input[type="radio"]#mode_point:checked ~ .inputs-coordinates {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .inputs-rotation {
+            display: none;
+        }
+
+        .toggle-group input[type="radio"]#mode_rotation:checked ~ .inputs-rotation {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        label h3 {
+            display: inline;
+        }
     </style>
     <script>
         function validateInputs() {
-            const inputs = document.querySelectorAll('.inputs input');
-            let allFilled = true;
-
-            Object.values(inputs).forEach(input => {
-                if (!input.value) {
-                    allFilled = false;
-                }
-            });
-            
-            if (!allFilled)
-                return;
-
+            function getNumber(x) {
+                if (!x)
+                    return undefined;
+                return +x;
+            }
             const values = {
-                x1o: +document.querySelector('.section:nth-of-type(1) .row:nth-of-type(1) label:nth-of-type(1) input').value.trim(),
-                y1o: +document.querySelector('.section:nth-of-type(1) .row:nth-of-type(1) label:nth-of-type(2) input').value.trim(),
-                z1o: +document.querySelector('.section:nth-of-type(1) .row:nth-of-type(1) label:nth-of-type(3) input').value.trim(),
-                x2o: +document.querySelector('.section:nth-of-type(1) .row:nth-of-type(2) label:nth-of-type(1) input').value.trim(),
-                y2o: +document.querySelector('.section:nth-of-type(1) .row:nth-of-type(2) label:nth-of-type(2) input').value.trim(),
-                z2o: +document.querySelector('.section:nth-of-type(1) .row:nth-of-type(2) label:nth-of-type(3) input').value.trim(),
-                x1n: +document.querySelector('.section:nth-of-type(2) .row:nth-of-type(1) label:nth-of-type(1) input').value.trim(),
-                y1n: +document.querySelector('.section:nth-of-type(2) .row:nth-of-type(1) label:nth-of-type(2) input').value.trim(),
-                z1n: +document.querySelector('.section:nth-of-type(2) .row:nth-of-type(1) label:nth-of-type(3) input').value.trim(),
-                x2n: +document.querySelector('.section:nth-of-type(2) .row:nth-of-type(2) label:nth-of-type(1) input').value.trim(),
-                y2n: +document.querySelector('.section:nth-of-type(2) .row:nth-of-type(2) label:nth-of-type(2) input').value.trim(),
-                z2n: +document.querySelector('.section:nth-of-type(2) .row:nth-of-type(2) label:nth-of-type(3) input').value.trim()
+                x1o: getNumber(document.getElementById('x1o').value.trim()),
+                y1o: getNumber(document.getElementById('y1o').value.trim()),
+                z1o: getNumber(document.getElementById('z1o').value.trim()),
+                x2o: getNumber(document.getElementById('x2o').value.trim()),
+                y2o: getNumber(document.getElementById('y2o').value.trim()),
+                z2o: getNumber(document.getElementById('z2o').value.trim()),
+                x1n: getNumber(document.getElementById('x1n').value.trim()),
+                y1n: getNumber(document.getElementById('y1n').value.trim()),
+                z1n: getNumber(document.getElementById('z1n').value.trim()),
+                x2n: getNumber(document.getElementById('x2n').value.trim()),
+                y2n: getNumber(document.getElementById('y2n').value.trim()),
+                z2n: getNumber(document.getElementById('z2n').value.trim()),
+                mode: document.querySelector('input[name="mode"]:checked').value,
+                rotation: getNumber(document.getElementById('rotation').value),
             };
+
+            const textarea = document.querySelector('textarea');
+            textarea.value = '';
+            
+            if (values.x1o === undefined || values.y1o === undefined || values.z1o === undefined ||
+                values.x2o === undefined || values.y2o === undefined || values.z2o === undefined ||
+                values.x1n === undefined || values.y1n === undefined || values.z1n === undefined ||
+                (
+                    values.mode === "point" && (values.x2n === undefined || values.y2n === undefined || values.z2n === undefined) ||
+                    values.mode === "rotation" && values.rotation === undefined
+                )
+            ) {
+                return;
+            }
             
             console.log(values)
 
-            processNumbers(values);
-        }
+            let {x1o, y1o, z1o, x2o, y2o, z2o, x1n, y1n, z1n, x2n, y2n, z2n, mode, rotation} = values;
 
-        function processNumbers(values) {
-            const textarea = document.querySelector('textarea');
-            textarea.value = '';
-
-            // Step 1
-            let correction = false;
-            const deltaYo = Math.abs(values.y2o - values.y1o);
-            const deltaYn = Math.abs(values.y2n - values.y1n);
-            if (deltaYo !== deltaYn) {
-                const y_correction = values.y2n < values.y1n ? -deltaYo : deltaYo;
-                values.y2n = values.y1n + y_correction;
-                correction = true;
-            }
-
-            // Step 2
             const rotateVector = (x, z, angle) => {
                 for (let a = 0; a < angle; ++a)
                     [x, z] = [-z, x]
@@ -145,42 +179,61 @@
                 };
             };
 
-            let bestMatch = null;
-            let bestAngle = 0;
-            let maxDistance = -Infinity;
-
             const rotation_text = {
               0: "Без поворота",
               1: "Поворот по часовой стрелке на 90 градусов",
               2: "Разворот на 180 граудсов",
               3: "Поворот против часовой стрелки на 90 градусов",
             };
-            
-            for (let angle = 0; angle < 4; ++angle) {
-                const rotated = rotateVector(values.x2o - values.x1o, values.z2o - values.z1o, angle);
-                const distance = rotated.x * (values.x2n - values.x1n) + rotated.z * (values.z2n - values.z1n);
-                console.log(`${rotation_text[angle]}\n`);
-                console.log(`${rotated.x} ${rotated.z}\n`);
-                console.log(`${rotated.x + values.x1n} ${rotated.z + values.z1n}\n`);
-                console.log(`${distance}\n`);
-                if (maxDistance < distance) {
-                    maxDistance = distance;
-                    bestMatch = rotated;
-                    bestAngle = angle;
+
+            let correction = false;
+            if (mode === "point") {
+                // Step 1
+                const deltaYo = Math.abs(y2o - y1o);
+                const deltaYn = Math.abs(y2n - y1n);
+                if (deltaYo !== deltaYn) {
+                    const y_correction = y2n < y1n ? -deltaYo : deltaYo;
+                    y2n = y1n + y_correction;
+                    correction = true;
                 }
-            }
-            
-            if (bestMatch.x !== values.x2n - values.x1n || bestMatch.z !== values.z2n - values.z1n) {
-                values.x2n = values.x1n + bestMatch.x;
-                values.z2n = values.z1n + bestMatch.z;
+
+                // Step 2
+                let bestMatch = null;
+                let bestAngle = 0;
+                let maxDistance = -Infinity;
+
+                for (let angle = 0; angle < 4; ++angle) {
+                    const rotated = rotateVector(x2o - x1o, z2o - z1o, angle);
+                    const distance = rotated.x * (x2n - x1n) + rotated.z * (z2n - z1n);
+                    console.log(`${rotation_text[angle]}\n`);
+                    console.log(`${rotated.x} ${rotated.z}\n`);
+                    console.log(`${rotated.x + x1n} ${rotated.z + z1n}\n`);
+                    console.log(`${distance}\n`);
+                    if (maxDistance < distance) {
+                        maxDistance = distance;
+                        bestMatch = rotated;
+                        bestAngle = angle;
+                    }
+                }
+                
+                if (bestMatch.x !== x2n - x1n || bestMatch.z !== z2n - z1n) {
+                    x2n = x1n + bestMatch.x;
+                    z2n = z1n + bestMatch.z;
+                    correction = true;
+                }
+
+                rotation = bestAngle;
+            } else {
+                y2n = y1n + y2o - y1o;
+                const rotated = rotateVector(x2o - x1o, z2o - z1o, rotation);
+                x2n = x1n + rotated.x;
+                z2n = z1n + rotated.z;
                 correction = true;
             }
-
             if (correction) {
-                textarea.value += `Вторая точка была скорректирована: x=${values.x2n}, y=${values.y2n}, z=${values.z2n}\n`;
+                textarea.value += `Вторая точка была скорректирована: x=${x2n}, y=${y2n}, z=${z2n}\n`;
             }
-
-            textarea.value += `${rotation_text[bestAngle]}\n`;
+            textarea.value += `${rotation_text[rotation]}\n`;
 
             // Step 3
             const print_points = function(f, s) {
@@ -190,58 +243,62 @@
             }
             
             const o1 = {
-                x: values.x1o,
-                y: Math.min(values.y1o, values.y2o),
-                z: values.z1o,
+                x: x1o,
+                y: Math.min(y1o, y2o),
+                z: z1o,
             };
             const o2 = {
-                x: values.x2o,
-                y: Math.max(values.y1o, values.y2o),
-                z: values.z2o,
+                x: x2o,
+                y: Math.max(y1o, y2o),
+                z: z2o,
             };
 
             const n1 = {
-                x: values.x1n,
-                y: Math.min(values.y1n, values.y2n),
-                z: values.z1n,
+                x: x1n,
+                y: Math.min(y1n, y2n),
+                z: z1n,
             };
             const n2 = {
-                x: values.x2n,
-                y: Math.max(values.y1n, values.y2n),
-                z: values.z2n,
+                x: x2n,
+                y: Math.max(y1n, y2n),
+                z: z2n,
             };
             
             textarea.value += `Изначальная ориентация:\n`;
+            textarea.value += `Старый мир:\n`;
             textarea.value += print_points(o1, o2);
+            textarea.value += `Новый мир:\n`;
             textarea.value += print_points(n1, n2);
 
             const o1_ = {
-                x: Math.min(values.x1o, values.x2o),
-                y: Math.min(values.y1o, values.y2o),
-                z: Math.min(values.z1o, values.z2o)
+                x: Math.min(x1o, x2o),
+                y: Math.min(y1o, y2o),
+                z: Math.min(z1o, z2o)
             };
             const o2_ = {
-                x: Math.max(values.x1o, values.x2o),
-                y: Math.max(values.y1o, values.y2o),
-                z: Math.max(values.z1o, values.z2o)
+                x: Math.max(x1o, x2o),
+                y: Math.max(y1o, y2o),
+                z: Math.max(z1o, z2o)
             };
             
-            const o_rotated = rotateVector(o2_.x - o1_.x, o2_.z - o1_.z, bestAngle);
+            const o_rotated = rotateVector(o2_.x - o1_.x, o2_.z - o1_.z, rotation);
 
             const n1_ = {
-                x: o_rotated.x > 0 ? Math.min(values.x1n, values.x2n) : Math.max(values.x1n, values.x2n),
-                y: Math.min(values.y1n, values.y2n),
-                z: o_rotated.z > 0 ? Math.min(values.z1n, values.z2n) : Math.max(values.z1n, values.z2n),
+                x: o_rotated.x > 0 ? Math.min(x1n, x2n) : Math.max(x1n, x2n),
+                y: Math.min(y1n, y2n),
+                z: o_rotated.z > 0 ? Math.min(z1n, z2n) : Math.max(z1n, z2n),
             };
             const n2_ = {
-                x: o_rotated.x > 0 ? Math.max(values.x1n, values.x2n) : Math.min(values.x1n, values.x2n),
-                y: Math.max(values.y1n, values.y2n),
-                z: o_rotated.z > 0 ? Math.max(values.z1n, values.z2n) : Math.min(values.z1n, values.z2n),
+                x: o_rotated.x > 0 ? Math.max(x1n, x2n) : Math.min(x1n, x2n),
+                y: Math.max(y1n, y2n),
+                z: o_rotated.z > 0 ? Math.max(z1n, z2n) : Math.min(z1n, z2n),
             };
 
             if (o1.x !== o1_.x || o1.y !== o1_.y || o1.z !== o1_.z) {
                 textarea.value += `Переориентация на северо-запад:\n`;
+                textarea.value += `Старый мир:\n`;
                 textarea.value += print_points(o1_, o2_);
+                textarea.value += `Новый мир:\n`;
                 textarea.value += print_points(n1_, n2_);
             }
         }
@@ -256,15 +313,15 @@
                 <div class="inputs">
                     <label>
                         x
-                        <input type="number" oninput="validateInputs()">
+                        <input id='x1o' type="number" oninput="validateInputs()">
                     </label>
                     <label>
                         y
-                        <input type="number" oninput="validateInputs()">
+                        <input id='y1o' type="number" oninput="validateInputs()">
                     </label>
                     <label>
                         z
-                        <input type="number" oninput="validateInputs()">
+                        <input id='z1o' type="number" oninput="validateInputs()">
                     </label>
                 </div>
             </div>
@@ -273,15 +330,15 @@
                 <div class="inputs">
                     <label>
                         x
-                        <input type="number" oninput="validateInputs()">
+                        <input id='x2o' type="number" oninput="validateInputs()">
                     </label>
                     <label>
                         y
-                        <input type="number" oninput="validateInputs()">
+                        <input id='y2o' type="number" oninput="validateInputs()">
                     </label>
                     <label>
                         z
-                        <input type="number" oninput="validateInputs()">
+                        <input id='z2o' type="number" oninput="validateInputs()">
                     </label>
                 </div>
             </div>
@@ -293,34 +350,52 @@
                 <div class="inputs">
                     <label>
                         x
-                        <input type="number" oninput="validateInputs()">
+                        <input id='x1n' type="number" oninput="validateInputs()">
                     </label>
                     <label>
                         y
-                        <input type="number" oninput="validateInputs()">
+                        <input id='y1n' type="number" oninput="validateInputs()">
                     </label>
                     <label>
                         z
-                        <input type="number" oninput="validateInputs()">
+                        <input id='z1n' type="number" oninput="validateInputs()">
                     </label>
                 </div>
             </div>
-            <div class="row">
-                <h3>Вторая точка (примерно)</h3>
-                <div class="inputs">
+            <div class="row toggle-group">
+                <input type="radio" id="mode_rotation" name="mode" value="rotation" checked onchange="validateInputs()">
+                <h3><label for="mode_rotation">Поворот</label></h3>
+                или
+                <input type="radio" id="mode_point" name="mode" value="point" onchange="validateInputs()">
+                <h3><label for="mode_point">Вторая точка (примерно)</label></h3>
+                
+                <div class="inputs inputs-coordinates">
                     <label>
                         x
-                        <input type="number" oninput="validateInputs()">
+                        <input id='x2n' type="number" oninput="validateInputs()">
                     </label>
                     <label>
                         y
-                        <input type="number" oninput="validateInputs()">
+                        <input id='y2n' type="number" oninput="validateInputs()">
                     </label>
                     <label>
                         z
-                        <input type="number" oninput="validateInputs()">
+                        <input id='z2n' type="number" oninput="validateInputs()">
                     </label>
                 </div>
+
+                <div class="inputs inputs-rotation">
+                    <label>
+                        Rotation
+                        <select id='rotation' onchange="validateInputs()">
+                            <option value='0'>Без поворота</option>
+                            <option value='1'>Поворот на 90 градусов по часовой стрелке</option>
+                            <option value='2'>Разворот на 180 градусов</option>
+                            <option value='3'>Поворот на 90 градусов против часовой стрелки</option>
+                        </select>
+                    </label>
+                </div>
+              </h3>
             </div>
         </div>
     </div>
