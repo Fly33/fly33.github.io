@@ -440,6 +440,8 @@ function generate_full(l10n) {
         result += '&!' + l10n.filters['shiny'];
     if (!shiny) // && !legendary
         result += '&!' + l10n.filters['purified'];
+    if (!shiny)
+        result += '&!' + l10n.filters['background'];
     if (!costume)
         result += '&!' + l10n.filters['costume'];
     result += '&!' + l10n.filters['shadow'] + '&!' + l10n.filters['traded'] + '&!4*;\n\n' + l10n.phrases.postscript;
@@ -481,6 +483,8 @@ function generate_compact(l10n) {
             result += '&!' + l10n.filters['shiny'];
         if (!shiny) // && !legendary
             result += '&!' + l10n.filters['purified'];
+        if (!shiny)
+            result += '&!' + l10n.filters['background'];
         if (!costume)
             result += '&!' + l10n.filters['costume'];
         result += '&!' + l10n.filters['shadow'] + '&!' + l10n.filters['traded'];
