@@ -91,6 +91,12 @@
           margin: 0;
           font-size: 10pt;
         }
+        #history {
+          max-height: 100px;
+          overflow-y: auto;
+          font-size: 14pt;
+          margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -120,6 +126,7 @@
               Total number of dice rolls: <span id="n_dice_rolls"></span>
             </p>
             <canvas id="histogram"></canvas> <!-- Histogram will be drawn here -->
+            <div id="history"></div>
             <p class="value">
                 Tolerance: <span id="tolerance"></span>
                 <span class="hint" title="The lower tolerance level you set the more steady the distribution will be. The new tolerance level will be applied after restart only." style="color: gray;">ⓘ</span>
@@ -173,14 +180,26 @@
             if (i === 6 && j === 6) {
                 throw new Error("Invalid state");
             }
+            roll(m, i, j);
+            return [i, j];
+        }
+        
+        function roll(m, i, j) {
             m[i][j] -= 36;
-            let r = [i, j];
             for (let i = 0; i < 6; i++) {
                 for (let j = 0; j < 6; j++) {
                     m[i][j] += 1;
                 }
             }
-            return r;
+        }
+        
+        function unroll(m, i, j) {
+            m[i][j] += 36;
+            for (let i = 0; i < 6; i++) {
+                for (let j = 0; j < 6; j++) {
+                    m[i][j] -= 1;
+                }
+            }
         }
 
         // Function to save data to local storage
@@ -224,7 +243,8 @@
         function updateNumber() {
             let element = document.getElementById('number');
             if (data.history.length > 0) {
-                let number = data.history[data.history.length-1] + 2;
+                let dice = data.history[data.history.length-1];
+                let number = dice[0] + dice[1] + 2;
                 if (number === 6 || number === 9)
                     element.classList.add('dotted');
                 else
@@ -232,6 +252,7 @@
                 element.innerHTML = number;
             } else {
                 element.innerHTML = "?";
+                element.classList.remove('dotted');
             }
         }
 
@@ -251,7 +272,7 @@
             
             let dice = diceRoll(data.grid);
             let number = dice[0] + dice[1];
-            data.history.push(number)
+            data.history.push(dice);
             ++data.stats[number];
 
             saveToLocalStorage(data);
@@ -273,6 +294,9 @@
         var myChart;
 
         function updateDialog() {
+            const historyDiv = document.getElementById('history');
+            const recent = data.history.slice(-8).reverse().map(pair => pair[0] + pair[1] + 2);
+            historyDiv.innerHTML = '<b>History:</b> ' + recent.join(', ');
             document.getElementById('n_dice_rolls').innerHTML = data.history.length;
             
             var ctx = document.getElementById('histogram').getContext('2d');
@@ -315,8 +339,9 @@
                 return;
             if (!confirm("Undo the last dice roll?"))
                 return;
-            let number = data.history.pop();
-            --data.stats[number];
+            let dice = data.history.pop();
+            unroll(data.grid, dice[0], dice[1]);
+            --data.stats[dice[0] + dice[1]];
 
             saveToLocalStorage(data);
 
