@@ -1046,7 +1046,7 @@
         "Z": "Z",
         "!": "!",
         "?": "?",
-        "Normal Form": "Normale",
+        "Normal Form": "Forma Normale",
         "Sunny Form": "Sole",
         "Rainy Form": "Pioggia",
         "Snowy Form": "Nuvola di Neve",
@@ -1215,7 +1215,9 @@
         "Curly Form": "Forma Arcuata",
         "Droopy Form": "Forma Adagiata",
         "Three-Segment Form": "Forma Trimetamero",
-        "Two-Segment Form": "Forma Bimetamero"
+        "Two-Segment Form": "Forma Bimetamero",
+        "Blade Forme": "Forma Spada",
+        "Shield Forme": "Forma Scudo"
     },
     "Filters": {
         "Normal": "Normale",

@@ -1046,7 +1046,7 @@
         "Z": "Z",
         "!": "!",
         "?": "?",
-        "Normal Form": "Normal",
+        "Normal Form": "Forma Normal",
         "Sunny Form": "Ensolarada",
         "Rainy Form": "Chuvosa",
         "Snowy Form": "Nevada",
@@ -1215,7 +1215,9 @@
         "Curly Form": "Forma Curvada",
         "Droopy Form": "Forma Pendular",
         "Three-Segment Form": "Forma Trissegmentar",
-        "Two-Segment Form": "Forma Bissegmentar"
+        "Two-Segment Form": "Forma Bissegmentar",
+        "Blade Forme": "Forma Lâmina",
+        "Shield Forme": "Forma Escudo"
     },
     "Filters": {
         "Normal": "Normal",

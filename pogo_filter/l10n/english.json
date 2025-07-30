@@ -1046,7 +1046,7 @@
         "Z": "Z",
         "!": "!",
         "?": "?",
-        "Normal Form": "Normal",
+        "Normal Form": "Normal Forme",
         "Sunny Form": "Sunny",
         "Rainy Form": "Rainy",
         "Snowy Form": "Snowy",
@@ -1215,7 +1215,9 @@
         "Curly Form": "Curly Form",
         "Droopy Form": "Droopy Form",
         "Three-Segment Form": "Three-Segment Form",
-        "Two-Segment Form": "Two-Segment Form"
+        "Two-Segment Form": "Two-Segment Form",
+        "Blade Forme": "Blade Forme",
+        "Shield Forme": "Shield Forme"
     },
     "Filters": {
         "Normal": "Normal",

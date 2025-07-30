@@ -1046,7 +1046,7 @@
         "Z": "Z",
         "!": "!",
         "?": "?",
-        "Normal Form": "ปกติ",
+        "Normal Form": "ฟอรมปกติ",
         "Sunny Form": "พระอาทิตย",
         "Rainy Form": "สายฝน",
         "Snowy Form": "เมฆหิมะ",
@@ -1215,7 +1215,9 @@
         "Curly Form": "รางโคง",
         "Droopy Form": "รางยอย",
         "Three-Segment Form": "ฟอรมสามปลอง",
-        "Two-Segment Form": "ฟอรมสองปลอง"
+        "Two-Segment Form": "ฟอรมสองปลอง",
+        "Blade Forme": "ฟอรมดาบ",
+        "Shield Forme": "ฟอรมโล"
     },
     "Filters": {
         "Normal": "ปกติ",

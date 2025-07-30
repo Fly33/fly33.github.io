@@ -1215,7 +1215,9 @@
         "Curly Form": "Gebogene Form",
         "Droopy Form": "Hängende Form",
         "Three-Segment Form": "Dreisegmentform",
-        "Two-Segment Form": "Zweisegmentform"
+        "Two-Segment Form": "Zweisegmentform",
+        "Blade Forme": "Klingenform",
+        "Shield Forme": "Schildform"
     },
     "Filters": {
         "Normal": "Normal",

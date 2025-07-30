@@ -1046,7 +1046,7 @@
         "Z": "Z",
         "!": "!",
         "?": "?",
-        "Normal Form": "Normal",
+        "Normal Form": "Normal Formu",
         "Sunny Form": "Güneşli",
         "Rainy Form": "Yağmurlu",
         "Snowy Form": "Karlı",
@@ -1215,7 +1215,9 @@
         "Curly Form": "Kıvrık Formu",
         "Droopy Form": "Sarkık Formu",
         "Three-Segment Form": "Üç Segment Formu",
-        "Two-Segment Form": "İki Segment Formu"
+        "Two-Segment Form": "İki Segment Formu",
+        "Blade Forme": "Kılıç Formu",
+        "Shield Forme": "Kalkan Formu"
     },
     "Filters": {
         "Normal": "Normal",

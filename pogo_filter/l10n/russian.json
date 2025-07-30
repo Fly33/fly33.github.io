@@ -1046,7 +1046,7 @@
         "Z": "Z",
         "!": "!",
         "?": "?",
-        "Normal Form": "Обычная форма",
+        "Normal Form": "Обычная Форма",
         "Sunny Form": "Солнечная Форма",
         "Rainy Form": "Дождевая Форма",
         "Snowy Form": "Снежная Форма",
@@ -1215,7 +1215,9 @@
         "Curly Form": "Изогнутая Форма",
         "Droopy Form": "Свисающая Форма",
         "Three-Segment Form": "Трёхсегментная Форма",
-        "Two-Segment Form": "Двухсегментная Форма"
+        "Two-Segment Form": "Двухсегментная Форма",
+        "Blade Forme": "Форма Лезвие",
+        "Shield Forme": "Форма Щит"
     },
     "Filters": {
         "Normal": "Обычный",
@@ -1249,7 +1251,7 @@
         "Age": "возраст",
         "Buddy": "Приятель",
         "CandyXL": "конфетыXL",
-        "Costume": "костюмы",
+        "Costume": "костюм",
         "CP": "БС",
         "Defender": "защитники",
         "Distance": "нарасстоянии",

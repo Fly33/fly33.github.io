@@ -1046,7 +1046,7 @@
         "Z": "Z",
         "!": "!",
         "?": "?",
-        "Normal Form": "Wujud Castform",
+        "Normal Form": "Bentuk Normal",
         "Sunny Form": "Wujud Matahari",
         "Rainy Form": "Wujud Air Hujan",
         "Snowy Form": "Wujud Awan Salju",
@@ -1215,7 +1215,9 @@
         "Curly Form": "Wujud Bengkok",
         "Droopy Form": "Wujud Merunduk",
         "Three-Segment Form": "Bentuk Tiga Segmen",
-        "Two-Segment Form": "Bentuk Dua Segmen"
+        "Two-Segment Form": "Bentuk Dua Segmen",
+        "Blade Forme": "Bentuk Pedang",
+        "Shield Forme": "Bentuk Perisai"
     },
     "Filters": {
         "Normal": "Normal",

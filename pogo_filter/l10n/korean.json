@@ -1046,7 +1046,7 @@
         "Z": "Z",
         "!": "!",
         "?": "?",
-        "Normal Form": "캐스퐁의 모습",
+        "Normal Form": "노말폼",
         "Sunny Form": "태양의 모습",
         "Rainy Form": "빗방울의 모습",
         "Snowy Form": "설운의 모습",
@@ -1204,9 +1204,9 @@
         "Ice Face": "Ice Face",
         "Hangry Mode": "배고픈 모양",
         "Full Belly Mode": "배부른 모양",
-        "Hero of Many Battles": "Hero of Many Battles",
-        "Crowned Shield": "Crowned Shield",
-        "Crowned Sword": "Crowned Sword",
+        "Hero of Many Battles": "역전의 용사",
+        "Crowned Shield": "방패왕",
+        "Crowned Sword": "검왕",
         "Family of Four": "네 식구",
         "Family of Three": "세 식구",
         "Hero Form": "마이티폼 ",
@@ -1215,7 +1215,9 @@
         "Curly Form": "젖힌 모습",
         "Droopy Form": "늘어진 모습",
         "Three-Segment Form": "세 마디폼",
-        "Two-Segment Form": "두 마디폼"
+        "Two-Segment Form": "두 마디폼",
+        "Blade Forme": "블레이드폼",
+        "Shield Forme": "실드폼"
     },
     "Filters": {
         "Normal": "노말",

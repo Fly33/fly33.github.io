@@ -1046,7 +1046,7 @@
         "Z": "Z",
         "!": "!",
         "?": "?",
-        "Normal Form": "Normale",
+        "Normal Form": "Forme Normale",
         "Sunny Form": "Solaire",
         "Rainy Form": "Eau de Pluie",
         "Snowy Form": "Blizzard",
@@ -1204,9 +1204,9 @@
         "Ice Face": "Ice Face",
         "Hangry Mode": "Mode Affamé",
         "Full Belly Mode": "Mode Rassasié",
-        "Hero of Many Battles": "Hero of Many Battles",
-        "Crowned Shield": "Crowned Shield",
-        "Crowned Sword": "Crowned Sword",
+        "Hero of Many Battles": "Héros Aguerri",
+        "Crowned Shield": "Bouclier Suprême",
+        "Crowned Sword": "Épée Suprême",
         "Family of Four": "Famille de Quatre",
         "Family of Three": "Famille de Trois",
         "Hero Form": "Forme Super",
@@ -1215,7 +1215,9 @@
         "Curly Form": "Forme Courbée",
         "Droopy Form": "Forme Affalée",
         "Three-Segment Form": "Forme Triple",
-        "Two-Segment Form": "Forme Double"
+        "Two-Segment Form": "Forme Double",
+        "Blade Forme": "Forme Assaut",
+        "Shield Forme": "Forme Parade"
     },
     "Filters": {
         "Normal": "Normal",

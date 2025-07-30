@@ -1046,11 +1046,11 @@
         "Z": "Z",
         "!": "!",
         "?": "?",
-        "Normal Form": "ポワルンのすがた",
+        "Normal Form": "ノーマルフォルム",
         "Sunny Form": "たいようのすがた",
         "Rainy Form": "あまみずのすがた",
         "Snowy Form": "ゆきぐものすがた",
-        "Normal Forme": "Nノーマルフォルム",
+        "Normal Forme": "ノーマルフォルム",
         "Attack Forme": "Aアタックフォルム",
         "Defense Forme": "Dディフェンスフォルム",
         "Speed Forme": "Sスピードフォルム",
@@ -1215,7 +1215,9 @@
         "Curly Form": "そったすがた",
         "Droopy Form": "たれたすがた",
         "Three-Segment Form": "みつふしフォルム",
-        "Two-Segment Form": "ふたふしフォルム"
+        "Two-Segment Form": "ふたふしフォルム",
+        "Blade Forme": "ブレードフォルム",
+        "Shield Forme": "シールドフォルム"
     },
     "Filters": {
         "Normal": "ノーマル",

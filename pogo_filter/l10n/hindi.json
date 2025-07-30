@@ -1046,7 +1046,7 @@
         "Z": "Z",
         "!": "!",
         "?": "?",
-        "Normal Form": "नॉमल फ़ॉम",
+        "Normal Form": "नॉमल फ़ॉम",
         "Sunny Form": "सूरज नकला आ है",
         "Rainy Form": "रन वॉटर फ़ॉम",
         "Snowy Form": "नो लाउड फ़ॉम",
@@ -1215,7 +1215,9 @@
         "Curly Form": "Curly Form",
         "Droopy Form": "Droopy Form",
         "Three-Segment Form": "Three-Segment Form",
-        "Two-Segment Form": "Two-Segment Form"
+        "Two-Segment Form": "Two-Segment Form",
+        "Blade Forme": "लड फ़ॉम",
+        "Shield Forme": "शीड फ़ॉम"
     },
     "Filters": {
         "Normal": "नॉमल",
