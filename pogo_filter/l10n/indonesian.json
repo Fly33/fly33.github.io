@@ -1217,7 +1217,11 @@
         "Three-Segment Form": "Bentuk Tiga Segmen",
         "Two-Segment Form": "Bentuk Dua Segmen",
         "Blade Forme": "Bentuk Pedang",
-        "Shield Forme": "Bentuk Perisai"
+        "Shield Forme": "Bentuk Perisai",
+        "Artisan Form": "Artisan Form",
+        "Counterfeit Form": "Counterfeit Form",
+        "Masterpiece Form": "Masterpiece Form",
+        "Unremarkable Form": "Unremarkable Form"
     },
     "Filters": {
         "Normal": "Normal",

@@ -1217,7 +1217,11 @@
         "Three-Segment Form": "Forme Triple",
         "Two-Segment Form": "Forme Double",
         "Blade Forme": "Forme Assaut",
-        "Shield Forme": "Forme Parade"
+        "Shield Forme": "Forme Parade",
+        "Artisan Form": "Artisan Form",
+        "Counterfeit Form": "Counterfeit Form",
+        "Masterpiece Form": "Masterpiece Form",
+        "Unremarkable Form": "Unremarkable Form"
     },
     "Filters": {
         "Normal": "Normal",

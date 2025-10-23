@@ -1217,7 +1217,11 @@
         "Three-Segment Form": "三節形態",
         "Two-Segment Form": "二節形態",
         "Blade Forme": "刀劍形態",
-        "Shield Forme": "盾牌形態"
+        "Shield Forme": "盾牌形態",
+        "Artisan Form": "Artisan Form",
+        "Counterfeit Form": "Counterfeit Form",
+        "Masterpiece Form": "Masterpiece Form",
+        "Unremarkable Form": "Unremarkable Form"
     },
     "Filters": {
         "Normal": "一般",

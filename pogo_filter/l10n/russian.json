@@ -782,8 +782,8 @@
         "Drampa": "Дрампа",
         "Dhelmise": "Делмайз",
         "Jangmo-o": "Джангмо-о",
-        "Hakamo-o": "Хакамо-o",
-        "Kommo-o": "Коммо-o",
+        "Hakamo-o": "Хакамо-о",
+        "Kommo-o": "Коммо-о",
         "Tapu Koko": "Тапу Коко",
         "Tapu Lele": "Тапу Леле",
         "Tapu Bulu": "Тапу Булу",
@@ -1217,7 +1217,11 @@
         "Three-Segment Form": "Трёхсегментная Форма",
         "Two-Segment Form": "Двухсегментная Форма",
         "Blade Forme": "Форма Лезвие",
-        "Shield Forme": "Форма Щит"
+        "Shield Forme": "Форма Щит",
+        "Artisan Form": "Artisan Form",
+        "Counterfeit Form": "Counterfeit Form",
+        "Masterpiece Form": "Masterpiece Form",
+        "Unremarkable Form": "Unremarkable Form"
     },
     "Filters": {
         "Normal": "Обычный",

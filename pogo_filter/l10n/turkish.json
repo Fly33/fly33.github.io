@@ -1217,7 +1217,11 @@
         "Three-Segment Form": "Üç Segment Formu",
         "Two-Segment Form": "İki Segment Formu",
         "Blade Forme": "Kılıç Formu",
-        "Shield Forme": "Kalkan Formu"
+        "Shield Forme": "Kalkan Formu",
+        "Artisan Form": "Artisan Form",
+        "Counterfeit Form": "Counterfeit Form",
+        "Masterpiece Form": "Masterpiece Form",
+        "Unremarkable Form": "Unremarkable Form"
     },
     "Filters": {
         "Normal": "Normal",

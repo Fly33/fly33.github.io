@@ -1217,7 +1217,11 @@
         "Three-Segment Form": "みつふしフォルム",
         "Two-Segment Form": "ふたふしフォルム",
         "Blade Forme": "ブレードフォルム",
-        "Shield Forme": "シールドフォルム"
+        "Shield Forme": "シールドフォルム",
+        "Artisan Form": "Artisan Form",
+        "Counterfeit Form": "Counterfeit Form",
+        "Masterpiece Form": "Masterpiece Form",
+        "Unremarkable Form": "Unremarkable Form"
     },
     "Filters": {
         "Normal": "ノーマル",

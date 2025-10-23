@@ -1217,7 +1217,11 @@
         "Three-Segment Form": "세 마디폼",
         "Two-Segment Form": "두 마디폼",
         "Blade Forme": "블레이드폼",
-        "Shield Forme": "실드폼"
+        "Shield Forme": "실드폼",
+        "Artisan Form": "Artisan Form",
+        "Counterfeit Form": "Counterfeit Form",
+        "Masterpiece Form": "Masterpiece Form",
+        "Unremarkable Form": "Unremarkable Form"
     },
     "Filters": {
         "Normal": "노말",

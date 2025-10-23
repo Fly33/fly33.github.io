@@ -1217,7 +1217,11 @@
         "Three-Segment Form": "Forma Trinodular",
         "Two-Segment Form": "Forma Binodular",
         "Blade Forme": "Forma Filo",
-        "Shield Forme": "Forma Escudo"
+        "Shield Forme": "Forma Escudo",
+        "Artisan Form": "Artisan Form",
+        "Counterfeit Form": "Counterfeit Form",
+        "Masterpiece Form": "Masterpiece Form",
+        "Unremarkable Form": "Unremarkable Form"
     },
     "Filters": {
         "Normal": "Normal",

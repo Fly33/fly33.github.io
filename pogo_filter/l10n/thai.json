@@ -1217,7 +1217,11 @@
         "Three-Segment Form": "ฟอรมสามปลอง",
         "Two-Segment Form": "ฟอรมสองปลอง",
         "Blade Forme": "ฟอรมดาบ",
-        "Shield Forme": "ฟอรมโล"
+        "Shield Forme": "ฟอรมโล",
+        "Artisan Form": "Artisan Form",
+        "Counterfeit Form": "Counterfeit Form",
+        "Masterpiece Form": "Masterpiece Form",
+        "Unremarkable Form": "Unremarkable Form"
     },
     "Filters": {
         "Normal": "ปกติ",
