@@ -1221,7 +1221,11 @@
         "Artisan Form": "高檔貨的樣子",
         "Counterfeit Form": "冒牌貨的樣子",
         "Masterpiece Form": "傑作的樣子",
-        "Unremarkable Form": "凡作的樣子"
+        "Unremarkable Form": "凡作的樣子",
+        "Yellow Plumage": "黃羽毛",
+        "Blue Plumage": "藍羽毛",
+        "Green Plumage": "綠羽毛",
+        "White Plumage": "白羽毛"
     },
     "Filters": {
         "Normal": "一般",

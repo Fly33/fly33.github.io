@@ -1221,7 +1221,11 @@
         "Artisan Form": "Wujud Barang Mahal",
         "Counterfeit Form": "Wujud Barang Palsu",
         "Masterpiece Form": "Wujud Mahakarya",
-        "Unremarkable Form": "Wujud Murahan"
+        "Unremarkable Form": "Wujud Murahan",
+        "Yellow Plumage": "Bulu Kuning",
+        "Blue Plumage": "Bulu Biru",
+        "Green Plumage": "Bulu Hijau",
+        "White Plumage": "Bulu Putih"
     },
     "Filters": {
         "Normal": "Normal",

@@ -1221,7 +1221,11 @@
         "Artisan Form": "タカイモノのすがた",
         "Counterfeit Form": "マガイモノのすがた",
         "Masterpiece Form": "ケッサクのすがた",
-        "Unremarkable Form": "ボンサクのすがた"
+        "Unremarkable Form": "ボンサクのすがた",
+        "Yellow Plumage": "イエローフェザー",
+        "Blue Plumage": "ブルーフェザー",
+        "Green Plumage": "グリーンフェザー",
+        "White Plumage": "ホワイトフェザー"
     },
     "Filters": {
         "Normal": "ノーマル",

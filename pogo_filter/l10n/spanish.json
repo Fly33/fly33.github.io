@@ -1221,7 +1221,11 @@
         "Artisan Form": "Forma Opulenta",
         "Counterfeit Form": "Forma Fraudulenta",
         "Masterpiece Form": "Forma Exquisita",
-        "Unremarkable Form": "Forma Mediocre"
+        "Unremarkable Form": "Forma Mediocre",
+        "Yellow Plumage": "Plumaje Amarillo",
+        "Blue Plumage": "Plumaje Azul",
+        "Green Plumage": "Plumaje Verde",
+        "White Plumage": "Plumaje Blanco"
     },
     "Filters": {
         "Normal": "Normal",

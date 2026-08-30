@@ -1221,7 +1221,11 @@
         "Artisan Form": "Forma Pregiata",
         "Counterfeit Form": "Forma Taroccata",
         "Masterpiece Form": "Forma Eccezionale",
-        "Unremarkable Form": "Forma Dozzinale"
+        "Unremarkable Form": "Forma Dozzinale",
+        "Yellow Plumage": "Piume Gialle",
+        "Blue Plumage": "Piume Azzurre",
+        "Green Plumage": "Piume Verdi",
+        "White Plumage": "Piume Bianche"
     },
     "Filters": {
         "Normal": "Normale",

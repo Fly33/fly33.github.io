@@ -1221,7 +1221,11 @@
         "Artisan Form": "El Yapımı Formu",
         "Counterfeit Form": "Taklit Formu",
         "Masterpiece Form": "Şaheser Formu",
-        "Unremarkable Form": "Alelade Formu"
+        "Unremarkable Form": "Alelade Formu",
+        "Yellow Plumage": "Sarı Tüylü",
+        "Blue Plumage": "Mavi Tüylü",
+        "Green Plumage": "Yeşil Tüylü",
+        "White Plumage": "Beyaz Tüylü"
     },
     "Filters": {
         "Normal": "Normal",

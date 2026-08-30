@@ -1221,7 +1221,11 @@
         "Artisan Form": "알짜배기의 모습",
         "Counterfeit Form": "가짜배기의 모습",
         "Masterpiece Form": "걸작의 모습",
-        "Unremarkable Form": "범작의 모습"
+        "Unremarkable Form": "범작의 모습",
+        "Yellow Plumage": "옐로 페더",
+        "Blue Plumage": "블루 페더",
+        "Green Plumage": "그린 페더",
+        "White Plumage": "화이트 페더"
     },
     "Filters": {
         "Normal": "노말",

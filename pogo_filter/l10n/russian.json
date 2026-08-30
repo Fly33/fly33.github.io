@@ -1221,7 +1221,11 @@
         "Artisan Form": "Форма Подлинник",
         "Counterfeit Form": "Форма Подделка",
         "Masterpiece Form": "Искусная Форма",
-        "Unremarkable Form": "Посредственная Форма"
+        "Unremarkable Form": "Посредственная Форма",
+        "Yellow Plumage": "Жёлтое Оперение",
+        "Blue Plumage": "Синее Оперение",
+        "Green Plumage": "Зелёное Оперение",
+        "White Plumage": "Белое Оперение"
     },
     "Filters": {
         "Normal": "Обычный",

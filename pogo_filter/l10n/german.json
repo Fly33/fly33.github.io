@@ -1221,7 +1221,11 @@
         "Artisan Form": "Kostbarkeitsform",
         "Counterfeit Form": "Imitationsform",
         "Masterpiece Form": "Edle Form",
-        "Unremarkable Form": "Simple Form"
+        "Unremarkable Form": "Simple Form",
+        "Yellow Plumage": "Gelbgefiedert",
+        "Blue Plumage": "Blaugefiedert",
+        "Green Plumage": "Grüngefiedert",
+        "White Plumage": "Weißgefiedert"
     },
     "Filters": {
         "Normal": "Normal",

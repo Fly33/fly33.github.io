@@ -1221,7 +1221,11 @@
         "Artisan Form": "Artisan Form",
         "Counterfeit Form": "Counterfeit Form",
         "Masterpiece Form": "Masterpiece Form",
-        "Unremarkable Form": "Unremarkable Form"
+        "Unremarkable Form": "Unremarkable Form",
+        "Yellow Plumage": "Yellow Plumage",
+        "Blue Plumage": "Blue Plumage",
+        "Green Plumage": "Green Plumage",
+        "White Plumage": "White Plumage"
     },
     "Filters": {
         "Normal": "Normal",
