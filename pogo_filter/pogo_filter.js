@@ -842,6 +842,7 @@ function make_checker(tree, l10n) {
     }
     
     let undefined_re = RegExp(`^(?:@[\\w -]+|\\d\\*|${escapeRegExp(l10n.filters['lucky'])}|${escapeRegExp(l10n.filters['shadow'])}|${escapeRegExp(l10n.filters['purified'])}|${escapeRegExp(l10n.filters['defender'])}|${escapeRegExp(l10n.filters['hp'])}\\s*\\d*-?\\d*|${escapeRegExp(l10n.filters['cp'])}\\s*\\d*-?\\d*|${escapeRegExp(l10n.filters['year'])}\\s*\\d*-?\\d*|${escapeRegExp(l10n.filters['age'])}\\s*\\d*-?\\d*|${escapeRegExp(l10n.filters['distance'])}\\s*\\d*-?\\d*|${escapeRegExp(l10n.filters['buddy'])}\\s*\\d*-?\\d*|${escapeRegExp(l10n.filters['traded'])}|${escapeRegExp(l10n.filters['hatched'])}|${escapeRegExp(l10n.filters['research'])}|${escapeRegExp(l10n.filters['raid'])}|${escapeRegExp(l10n.filters['remoteraid'])}|${escapeRegExp(l10n.filters['exraid'])}|${escapeRegExp(l10n.filters['megaraid'])}|${escapeRegExp(l10n.filters['rocket'])}|${escapeRegExp(l10n.filters['gbl'])}|${escapeRegExp(l10n.filters['snapshot'])}|${escapeRegExp(l10n.filters['candyxl'])})$`, "i");
+    let check_undefined_re = RegExp(`^(?:${escapeRegExp(l10n.filters["xxs"])}|${escapeRegExp(l10n.filters["xs"])}|${escapeRegExp(l10n.filters["xl"])}|${escapeRegExp(l10n.filters["xxl"])})$`, "i");
     let dex_re = /^(?:(\d+)|(\d*)-(\d*))$/;
     let evolve_re = RegExp(`^(?:${escapeRegExp(l10n.filters["evolve"])}|${escapeRegExp(l10n.filters["tradeevolve"])}|${escapeRegExp(l10n.filters["evolvenew"])})$`, "i");
     let megaevolve_re = RegExp(`^${escapeRegExp(l10n.filters["megaevolve"])}$`, "i");
@@ -896,6 +897,17 @@ function make_checker(tree, l10n) {
             return record => declare(!!record.data.mythical, 1);
         if (str.search(undefined_re) != -1)
             return _record => declare(unclear, 1);
+        if (str.search(check_undefined_re) != -1)
+            return record => {
+                if (+record.data.dex === 710 || +record.data.dex === 711) // Pumpkaboo, Gourgeist
+                    return evaluate(l10n.names[record.data.name.toLowerCase()].toLowerCase().startsWith(str) ||
+                    l10n.filters[record.data.type1.toLowerCase()].toLowerCase() === str ||
+                    record.data.type2 !== "" && l10n.filters[record.data.type2.toLowerCase()].toLowerCase() === str ||
+                    l10n.filters[record.data.origin_region.toLowerCase()].toLowerCase() === str ||
+                    record.data.filter1 !== "" && l10n.filters[record.data.filter1.toLowerCase()].toLowerCase() === str ||
+                    record.data.filter2 !== "" && l10n.filters[record.data.filter2.toLowerCase()].toLowerCase() === str);
+                return declare(unclear, 1);
+            }
         return record => evaluate(l10n.names[record.data.name.toLowerCase()].toLowerCase().startsWith(str) ||
                                   l10n.filters[record.data.type1.toLowerCase()].toLowerCase() === str ||
                                   record.data.type2 !== "" && l10n.filters[record.data.type2.toLowerCase()].toLowerCase() === str ||
@@ -1392,7 +1404,8 @@ function check_l10n() {
             }
             for (let j = 0; j < data[i].genus.length; ++j) {
                 if (data[i].genus[j].kind.title && !(data[i].genus[j].kind.title.toLowerCase() in l10n[k].data.forms)) {
-                    console.warn(`"${data[i].genus[j].kind.title}" is missing from "${l10n[k].name}"!`);
+                    if (!data[i].genus[j].kind.costume)
+                        console.warn(`"${data[i].genus[j].kind.title}" is missing from "${l10n[k].name}"!`);
                     l10n[k].data.forms[data[i].genus[j].kind.title.toLowerCase()] = data[i].genus[j].kind.title; 
                 }
             }
